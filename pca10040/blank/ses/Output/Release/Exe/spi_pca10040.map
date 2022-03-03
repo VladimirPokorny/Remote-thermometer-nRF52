@@ -415,12 +415,8 @@ Discarded input sections
                 0x0000000000000000       0x3c Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
  .text.nrf_log_push
                 0x0000000000000000       0x60 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
- .text.nrf_log_frontend_std_1
-                0x0000000000000000       0x12 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
  .text.nrf_log_frontend_std_2
                 0x0000000000000000       0x14 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
- .text.nrf_log_frontend_std_3
-                0x0000000000000000       0x18 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
  .text.nrf_log_frontend_std_4
                 0x0000000000000000       0x1c Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
  .text.nrf_log_frontend_std_5
@@ -3383,15 +3379,22 @@ Discarded input sections
  .text          0x0000000000000000        0x0 Output/Release/Obj/spi_pca10040/main.o
  .data          0x0000000000000000        0x0 Output/Release/Obj/spi_pca10040/main.o
  .bss           0x0000000000000000        0x0 Output/Release/Obj/spi_pca10040/main.o
+ .text.setWires
+                0x0000000000000000       0x26 Output/Release/Obj/spi_pca10040/main.o
+ .text.autoConvert
+                0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/main.o
+ .rodata.begin.str1.1
+                0x0000000000000000       0x29 Output/Release/Obj/spi_pca10040/main.o
+ .text.begin    0x0000000000000000       0x3c Output/Release/Obj/spi_pca10040/main.o
  .text.enable50Hz
                 0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/main.o
  .bss.test      0x0000000000000000        0x1 Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000      0xb26 Output/Release/Obj/spi_pca10040/main.o
- .debug_macro   0x0000000000000000      0x9cc Output/Release/Obj/spi_pca10040/main.o
+ .debug_macro   0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000      0x1a3 Output/Release/Obj/spi_pca10040/main.o
+ .debug_macro   0x0000000000000000      0x9cc Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000       0x89 Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000       0x1c Output/Release/Obj/spi_pca10040/main.o
- .debug_macro   0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000       0x28 Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000       0x3b Output/Release/Obj/spi_pca10040/main.o
  .debug_macro   0x0000000000000000       0x1c Output/Release/Obj/spi_pca10040/main.o
@@ -6152,301 +6155,299 @@ Linker script and memory map
  .text.nrf_log_frontend_std_0
                 0x0000000000000a3c        0x8 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
                 0x0000000000000a3c                nrf_log_frontend_std_0
+ .text.nrf_log_frontend_std_1
+                0x0000000000000a44       0x12 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
+                0x0000000000000a44                nrf_log_frontend_std_1
+ .text.nrf_log_frontend_std_3
+                0x0000000000000a56       0x18 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
+                0x0000000000000a56                nrf_log_frontend_std_3
+ *fill*         0x0000000000000a6e        0x2 
  .text.nrf_log_frontend_hexdump
-                0x0000000000000a44       0xb4 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
-                0x0000000000000a44                nrf_log_frontend_hexdump
+                0x0000000000000a70       0xb4 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
+                0x0000000000000a70                nrf_log_frontend_hexdump
  .text.nrf_log_backend_add
-                0x0000000000000af8       0x44 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
-                0x0000000000000af8                nrf_log_backend_add
+                0x0000000000000b24       0x44 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
+                0x0000000000000b24                nrf_log_backend_add
  .text.nrf_log_panic
-                0x0000000000000b3c       0x28 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
-                0x0000000000000b3c                nrf_log_panic
+                0x0000000000000b68       0x28 Output/Release/Obj/spi_pca10040/nrf_log_frontend.o
+                0x0000000000000b68                nrf_log_panic
  .text.prefix_process
-                0x0000000000000b64       0x7c Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
+                0x0000000000000b90       0x7c Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
  .text.postfix_process
-                0x0000000000000be0       0x44 Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
+                0x0000000000000c0c       0x44 Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
  .text.nrf_log_std_entry_process
-                0x0000000000000c24       0xc8 Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
-                0x0000000000000c24                nrf_log_std_entry_process
+                0x0000000000000c50       0xc8 Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
+                0x0000000000000c50                nrf_log_std_entry_process
  .text.nrf_log_hexdump_entry_process
-                0x0000000000000cec       0xc0 Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
-                0x0000000000000cec                nrf_log_hexdump_entry_process
+                0x0000000000000d18       0xc0 Output/Release/Obj/spi_pca10040/nrf_log_str_formatter.o
+                0x0000000000000d18                nrf_log_hexdump_entry_process
  .text.bsp_board_led_off
-                0x0000000000000dac       0x18 Output/Release/Obj/spi_pca10040/boards.o
-                0x0000000000000dac                bsp_board_led_off
+                0x0000000000000dd8       0x18 Output/Release/Obj/spi_pca10040/boards.o
+                0x0000000000000dd8                bsp_board_led_off
  .text.bsp_board_leds_off
-                0x0000000000000dc4       0x1e Output/Release/Obj/spi_pca10040/boards.o
-                0x0000000000000dc4                bsp_board_leds_off
- *fill*         0x0000000000000de2        0x2 
+                0x0000000000000df0       0x1e Output/Release/Obj/spi_pca10040/boards.o
+                0x0000000000000df0                bsp_board_leds_off
+ *fill*         0x0000000000000e0e        0x2 
  .text.bsp_board_led_invert
-                0x0000000000000de4       0x24 Output/Release/Obj/spi_pca10040/boards.o
-                0x0000000000000de4                bsp_board_led_invert
+                0x0000000000000e10       0x24 Output/Release/Obj/spi_pca10040/boards.o
+                0x0000000000000e10                bsp_board_led_invert
  .text.bsp_board_init
-                0x0000000000000e08       0x3e Output/Release/Obj/spi_pca10040/boards.o
-                0x0000000000000e08                bsp_board_init
+                0x0000000000000e34       0x3e Output/Release/Obj/spi_pca10040/boards.o
+                0x0000000000000e34                bsp_board_init
  .text.app_error_handler_bare
-                0x0000000000000e46       0x1a Output/Release/Obj/spi_pca10040/app_error.o
-                0x0000000000000e46                app_error_handler_bare
+                0x0000000000000e72       0x1a Output/Release/Obj/spi_pca10040/app_error.o
+                0x0000000000000e72                app_error_handler_bare
  .text.app_error_fault_handler
-                0x0000000000000e60       0x6c Output/Release/Obj/spi_pca10040/app_error_weak.o
-                0x0000000000000e60                app_error_fault_handler
+                0x0000000000000e8c       0x6c Output/Release/Obj/spi_pca10040/app_error_weak.o
+                0x0000000000000e8c                app_error_fault_handler
  .text.app_util_disable_irq
-                0x0000000000000ecc       0x10 Output/Release/Obj/spi_pca10040/app_util_platform.o
-                0x0000000000000ecc                app_util_disable_irq
+                0x0000000000000ef8       0x10 Output/Release/Obj/spi_pca10040/app_util_platform.o
+                0x0000000000000ef8                app_util_disable_irq
  .text.app_util_enable_irq
-                0x0000000000000edc       0x14 Output/Release/Obj/spi_pca10040/app_util_platform.o
-                0x0000000000000edc                app_util_enable_irq
+                0x0000000000000f08       0x14 Output/Release/Obj/spi_pca10040/app_util_platform.o
+                0x0000000000000f08                app_util_enable_irq
  .text.app_util_critical_region_enter
-                0x0000000000000ef0        0x4 Output/Release/Obj/spi_pca10040/app_util_platform.o
-                0x0000000000000ef0                app_util_critical_region_enter
+                0x0000000000000f1c        0x4 Output/Release/Obj/spi_pca10040/app_util_platform.o
+                0x0000000000000f1c                app_util_critical_region_enter
  .text.app_util_critical_region_exit
-                0x0000000000000ef4        0x4 Output/Release/Obj/spi_pca10040/app_util_platform.o
-                0x0000000000000ef4                app_util_critical_region_exit
+                0x0000000000000f20        0x4 Output/Release/Obj/spi_pca10040/app_util_platform.o
+                0x0000000000000f20                app_util_critical_region_exit
  .text.RTC1_IRQHandler
-                0x0000000000000ef8       0x14 Output/Release/Obj/spi_pca10040/drv_rtc.o
-                0x0000000000000ef8                RTC1_IRQHandler
+                0x0000000000000f24       0x14 Output/Release/Obj/spi_pca10040/drv_rtc.o
+                0x0000000000000f24                RTC1_IRQHandler
  .text.nrf_atomic_u32_fetch_store
-                0x0000000000000f0c       0x16 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f0c                nrf_atomic_u32_fetch_store
+                0x0000000000000f38       0x16 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000f38                nrf_atomic_u32_fetch_store
  .text.nrf_atomic_u32_or
-                0x0000000000000f22       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f22                nrf_atomic_u32_or
+                0x0000000000000f4e       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000f4e                nrf_atomic_u32_or
  .text.nrf_atomic_u32_fetch_and
-                0x0000000000000f3a       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f3a                nrf_atomic_u32_fetch_and
+                0x0000000000000f66       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000f66                nrf_atomic_u32_fetch_and
  .text.nrf_atomic_u32_add
-                0x0000000000000f52       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f52                nrf_atomic_u32_add
+                0x0000000000000f7e       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000f7e                nrf_atomic_u32_add
  .text.nrf_atomic_u32_sub
-                0x0000000000000f6a       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f6a                nrf_atomic_u32_sub
+                0x0000000000000f96       0x18 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000f96                nrf_atomic_u32_sub
  .text.nrf_atomic_flag_set
-                0x0000000000000f82        0x6 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f82                nrf_atomic_flag_set
+                0x0000000000000fae        0x6 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000fae                nrf_atomic_flag_set
  .text.nrf_atomic_flag_clear_fetch
-                0x0000000000000f88        0x6 Output/Release/Obj/spi_pca10040/nrf_atomic.o
-                0x0000000000000f88                nrf_atomic_flag_clear_fetch
+                0x0000000000000fb4        0x6 Output/Release/Obj/spi_pca10040/nrf_atomic.o
+                0x0000000000000fb4                nrf_atomic_flag_clear_fetch
  .text.nrf_balloc_init
-                0x0000000000000f8e       0x2e Output/Release/Obj/spi_pca10040/nrf_balloc.o
-                0x0000000000000f8e                nrf_balloc_init
+                0x0000000000000fba       0x2e Output/Release/Obj/spi_pca10040/nrf_balloc.o
+                0x0000000000000fba                nrf_balloc_init
  .text.nrf_balloc_alloc
-                0x0000000000000fbc       0x40 Output/Release/Obj/spi_pca10040/nrf_balloc.o
-                0x0000000000000fbc                nrf_balloc_alloc
+                0x0000000000000fe8       0x40 Output/Release/Obj/spi_pca10040/nrf_balloc.o
+                0x0000000000000fe8                nrf_balloc_alloc
  .text.nrf_balloc_free
-                0x0000000000000ffc       0x2a Output/Release/Obj/spi_pca10040/nrf_balloc.o
-                0x0000000000000ffc                nrf_balloc_free
+                0x0000000000001028       0x2a Output/Release/Obj/spi_pca10040/nrf_balloc.o
+                0x0000000000001028                nrf_balloc_free
  .text.nrf_fprintf_buffer_flush
-                0x0000000000001026       0x16 Output/Release/Obj/spi_pca10040/nrf_fprintf.o
-                0x0000000000001026                nrf_fprintf_buffer_flush
+                0x0000000000001052       0x16 Output/Release/Obj/spi_pca10040/nrf_fprintf.o
+                0x0000000000001052                nrf_fprintf_buffer_flush
  .text.nrf_fprintf
-                0x000000000000103c       0x1c Output/Release/Obj/spi_pca10040/nrf_fprintf.o
-                0x000000000000103c                nrf_fprintf
+                0x0000000000001068       0x1c Output/Release/Obj/spi_pca10040/nrf_fprintf.o
+                0x0000000000001068                nrf_fprintf
  .text.buffer_add
-                0x0000000000001058       0x2e Output/Release/Obj/spi_pca10040/nrf_fprintf_format.o
- *fill*         0x0000000000001086        0x2 
+                0x0000000000001084       0x2e Output/Release/Obj/spi_pca10040/nrf_fprintf_format.o
+ *fill*         0x00000000000010b2        0x2 
  .text.unsigned_print
-                0x0000000000001088       0xb4 Output/Release/Obj/spi_pca10040/nrf_fprintf_format.o
+                0x00000000000010b4       0xb4 Output/Release/Obj/spi_pca10040/nrf_fprintf_format.o
  .text.nrf_fprintf_fmt
-                0x000000000000113c      0x294 Output/Release/Obj/spi_pca10040/nrf_fprintf_format.o
-                0x000000000000113c                nrf_fprintf_fmt
+                0x0000000000001168      0x294 Output/Release/Obj/spi_pca10040/nrf_fprintf_format.o
+                0x0000000000001168                nrf_fprintf_fmt
  .text.memobj_op
-                0x00000000000013d0       0x86 Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x00000000000013fc       0x86 Output/Release/Obj/spi_pca10040/nrf_memobj.o
  .text.nrf_memobj_pool_init
-                0x0000000000001456        0x4 Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x0000000000001456                nrf_memobj_pool_init
+                0x0000000000001482        0x4 Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x0000000000001482                nrf_memobj_pool_init
  .text.nrf_memobj_free
-                0x000000000000145a       0x2c Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x000000000000145a                nrf_memobj_free
+                0x0000000000001486       0x2c Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x0000000000001486                nrf_memobj_free
  .text.nrf_memobj_alloc
-                0x0000000000001486       0x5e Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x0000000000001486                nrf_memobj_alloc
+                0x00000000000014b2       0x5e Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x00000000000014b2                nrf_memobj_alloc
  .text.nrf_memobj_get
-                0x00000000000014e4        0x8 Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x00000000000014e4                nrf_memobj_get
+                0x0000000000001510        0x8 Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x0000000000001510                nrf_memobj_get
  .text.nrf_memobj_put
-                0x00000000000014ec       0x1c Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x00000000000014ec                nrf_memobj_put
+                0x0000000000001518       0x1c Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x0000000000001518                nrf_memobj_put
  .text.nrf_memobj_write
-                0x0000000000001508       0x14 Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x0000000000001508                nrf_memobj_write
+                0x0000000000001534       0x14 Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x0000000000001534                nrf_memobj_write
  .text.nrf_memobj_read
-                0x000000000000151c       0x14 Output/Release/Obj/spi_pca10040/nrf_memobj.o
-                0x000000000000151c                nrf_memobj_read
+                0x0000000000001548       0x14 Output/Release/Obj/spi_pca10040/nrf_memobj.o
+                0x0000000000001548                nrf_memobj_read
  .text.nrf_ringbuf_init
-                0x0000000000001530       0x12 Output/Release/Obj/spi_pca10040/nrf_ringbuf.o
-                0x0000000000001530                nrf_ringbuf_init
- *fill*         0x0000000000001542        0x2 
+                0x000000000000155c       0x12 Output/Release/Obj/spi_pca10040/nrf_ringbuf.o
+                0x000000000000155c                nrf_ringbuf_init
+ *fill*         0x000000000000156e        0x2 
  .text.spim_evt_handler
-                0x0000000000001544       0x3c Output/Release/Obj/spi_pca10040/nrf_drv_spi.o
+                0x0000000000001570       0x3c Output/Release/Obj/spi_pca10040/nrf_drv_spi.o
  .text.nrf_drv_spi_init
-                0x0000000000001580       0x64 Output/Release/Obj/spi_pca10040/nrf_drv_spi.o
-                0x0000000000001580                nrf_drv_spi_init
+                0x00000000000015ac       0x64 Output/Release/Obj/spi_pca10040/nrf_drv_spi.o
+                0x00000000000015ac                nrf_drv_spi_init
  .text.uarte_evt_handler
-                0x00000000000015e4       0x34 Output/Release/Obj/spi_pca10040/nrf_drv_uart.o
+                0x0000000000001610       0x34 Output/Release/Obj/spi_pca10040/nrf_drv_uart.o
  .text.uart_evt_handler
-                0x0000000000001618       0x34 Output/Release/Obj/spi_pca10040/nrf_drv_uart.o
+                0x0000000000001644       0x34 Output/Release/Obj/spi_pca10040/nrf_drv_uart.o
  .text.nrf_drv_uart_init
-                0x000000000000164c       0x7c Output/Release/Obj/spi_pca10040/nrf_drv_uart.o
-                0x000000000000164c                nrf_drv_uart_init
+                0x0000000000001678       0x7c Output/Release/Obj/spi_pca10040/nrf_drv_uart.o
+                0x0000000000001678                nrf_drv_uart_init
  .text.nrf_gpiote_event_clear
-                0x00000000000016c8       0x18 Output/Release/Obj/spi_pca10040/nrfx_gpiote.o
+                0x00000000000016f4       0x18 Output/Release/Obj/spi_pca10040/nrfx_gpiote.o
  .text.nrf_gpio_cfg_sense_set
-                0x00000000000016e0       0x20 Output/Release/Obj/spi_pca10040/nrfx_gpiote.o
+                0x000000000000170c       0x20 Output/Release/Obj/spi_pca10040/nrfx_gpiote.o
  .text.GPIOTE_IRQHandler
-                0x0000000000001700      0x14c Output/Release/Obj/spi_pca10040/nrfx_gpiote.o
-                0x0000000000001700                GPIOTE_IRQHandler
+                0x000000000000172c      0x14c Output/Release/Obj/spi_pca10040/nrfx_gpiote.o
+                0x000000000000172c                GPIOTE_IRQHandler
  .text.UARTE0_UART0_IRQHandler
-                0x000000000000184c        0xc Output/Release/Obj/spi_pca10040/nrfx_prs.o
-                0x000000000000184c                UARTE0_UART0_IRQHandler
+                0x0000000000001878        0xc Output/Release/Obj/spi_pca10040/nrfx_prs.o
+                0x0000000000001878                UARTE0_UART0_IRQHandler
  .text.nrfx_prs_acquire
-                0x0000000000001858       0x38 Output/Release/Obj/spi_pca10040/nrfx_prs.o
-                0x0000000000001858                nrfx_prs_acquire
+                0x0000000000001884       0x38 Output/Release/Obj/spi_pca10040/nrfx_prs.o
+                0x0000000000001884                nrfx_prs_acquire
  .text.nrfx_prs_release
-                0x0000000000001890       0x18 Output/Release/Obj/spi_pca10040/nrfx_prs.o
-                0x0000000000001890                nrfx_prs_release
+                0x00000000000018bc       0x18 Output/Release/Obj/spi_pca10040/nrfx_prs.o
+                0x00000000000018bc                nrfx_prs_release
  .text.SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler
-                0x00000000000018a8       0x58 Output/Release/Obj/spi_pca10040/nrfx_spim.o
-                0x00000000000018a8                SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler
+                0x00000000000018d4       0x58 Output/Release/Obj/spi_pca10040/nrfx_spim.o
+                0x00000000000018d4                SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler
  .text.nrfx_spim_init
-                0x0000000000001900      0x1ac Output/Release/Obj/spi_pca10040/nrfx_spim.o
-                0x0000000000001900                nrfx_spim_init
+                0x000000000000192c      0x1ac Output/Release/Obj/spi_pca10040/nrfx_spim.o
+                0x000000000000192c                nrfx_spim_init
  .text.nrfx_spim_xfer
-                0x0000000000001aac      0x128 Output/Release/Obj/spi_pca10040/nrfx_spim.o
-                0x0000000000001aac                nrfx_spim_xfer
+                0x0000000000001ad8      0x128 Output/Release/Obj/spi_pca10040/nrfx_spim.o
+                0x0000000000001ad8                nrfx_spim_xfer
  .text.nrf_uart_event_clear
-                0x0000000000001bd4       0x10 Output/Release/Obj/spi_pca10040/nrfx_uart.o
- .text.tx_byte  0x0000000000001be4       0x1e Output/Release/Obj/spi_pca10040/nrfx_uart.o
- .text.rx_byte  0x0000000000001c02       0x2c Output/Release/Obj/spi_pca10040/nrfx_uart.o
- *fill*         0x0000000000001c2e        0x2 
+                0x0000000000001c00       0x10 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+ .text.tx_byte  0x0000000000001c10       0x1e Output/Release/Obj/spi_pca10040/nrfx_uart.o
+ .text.rx_byte  0x0000000000001c2e       0x2c Output/Release/Obj/spi_pca10040/nrfx_uart.o
+ *fill*         0x0000000000001c5a        0x2 
  .text.rx_done_event.constprop.0
-                0x0000000000001c30       0x20 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+                0x0000000000001c5c       0x20 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .text.nrfx_uart_0_irq_handler
-                0x0000000000001c50      0x140 Output/Release/Obj/spi_pca10040/nrfx_uart.o
-                0x0000000000001c50                nrfx_uart_0_irq_handler
+                0x0000000000001c7c      0x140 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+                0x0000000000001c7c                nrfx_uart_0_irq_handler
  .text.nrfx_uart_init
-                0x0000000000001d90      0x168 Output/Release/Obj/spi_pca10040/nrfx_uart.o
-                0x0000000000001d90                nrfx_uart_init
+                0x0000000000001dbc      0x168 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+                0x0000000000001dbc                nrfx_uart_init
  .text.nrfx_uart_uninit
-                0x0000000000001ef8       0xd4 Output/Release/Obj/spi_pca10040/nrfx_uart.o
-                0x0000000000001ef8                nrfx_uart_uninit
+                0x0000000000001f24       0xd4 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+                0x0000000000001f24                nrfx_uart_uninit
  .text.nrfx_uart_tx_in_progress
-                0x0000000000001fcc       0x18 Output/Release/Obj/spi_pca10040/nrfx_uart.o
-                0x0000000000001fcc                nrfx_uart_tx_in_progress
+                0x0000000000001ff8       0x18 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+                0x0000000000001ff8                nrfx_uart_tx_in_progress
  .text.nrfx_uart_tx
-                0x0000000000001fe4       0xa0 Output/Release/Obj/spi_pca10040/nrfx_uart.o
-                0x0000000000001fe4                nrfx_uart_tx
+                0x0000000000002010       0xa0 Output/Release/Obj/spi_pca10040/nrfx_uart.o
+                0x0000000000002010                nrfx_uart_tx
  .text.nrf_uarte_event_clear
-                0x0000000000002084       0x10 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x00000000000020b0       0x10 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
  .text.rx_done_event.constprop.0
-                0x0000000000002094       0x20 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x00000000000020c0       0x20 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
  .text.nrfx_uarte_0_irq_handler
-                0x00000000000020b4      0x118 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
-                0x00000000000020b4                nrfx_uarte_0_irq_handler
+                0x00000000000020e0      0x118 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x00000000000020e0                nrfx_uarte_0_irq_handler
  .text.nrfx_uarte_init
-                0x00000000000021cc      0x184 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
-                0x00000000000021cc                nrfx_uarte_init
+                0x00000000000021f8      0x184 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x00000000000021f8                nrfx_uarte_init
  .text.nrfx_uarte_uninit
-                0x0000000000002350      0x120 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
-                0x0000000000002350                nrfx_uarte_uninit
+                0x000000000000237c      0x120 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x000000000000237c                nrfx_uarte_uninit
  .text.nrfx_uarte_tx_in_progress
-                0x0000000000002470       0x18 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
-                0x0000000000002470                nrfx_uarte_tx_in_progress
+                0x000000000000249c       0x18 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x000000000000249c                nrfx_uarte_tx_in_progress
  .text.nrfx_uarte_tx
-                0x0000000000002488       0x9c Output/Release/Obj/spi_pca10040/nrfx_uarte.o
-                0x0000000000002488                nrfx_uarte_tx
+                0x00000000000024b4       0x9c Output/Release/Obj/spi_pca10040/nrfx_uarte.o
+                0x00000000000024b4                nrfx_uarte_tx
  .text.spi_event_handler
-                0x0000000000002524        0xc Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002524                spi_event_handler
+                0x0000000000002550        0xc Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000002550                spi_event_handler
  .text.nrf_delay_ms.part.0
-                0x0000000000002530       0x1c Output/Release/Obj/spi_pca10040/main.o
+                0x000000000000255c       0x1c Output/Release/Obj/spi_pca10040/main.o
  .text.spi_init
-                0x000000000000254c       0x44 Output/Release/Obj/spi_pca10040/main.o
-                0x000000000000254c                spi_init
+                0x0000000000002578       0x44 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000002578                spi_init
  .text.readRegisterN
-                0x0000000000002590       0x48 Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002590                readRegisterN
+                0x00000000000025bc       0x50 Output/Release/Obj/spi_pca10040/main.o
+                0x00000000000025bc                readRegisterN
  .text.readRegister8
-                0x00000000000025d8       0x1c Output/Release/Obj/spi_pca10040/main.o
-                0x00000000000025d8                readRegister8
+                0x000000000000260c       0x1c Output/Release/Obj/spi_pca10040/main.o
+                0x000000000000260c                readRegister8
  .text.readFault
-                0x00000000000025f4        0x6 Output/Release/Obj/spi_pca10040/main.o
-                0x00000000000025f4                readFault
+                0x0000000000002628        0x6 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000002628                readFault
  .text.readRegister16
-                0x00000000000025fa       0x1e Output/Release/Obj/spi_pca10040/main.o
-                0x00000000000025fa                readRegister16
+                0x000000000000262e       0x1e Output/Release/Obj/spi_pca10040/main.o
+                0x000000000000262e                readRegister16
  .text.writeRegister8
-                0x0000000000002618       0x4c Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002618                writeRegister8
- .text.setWires
-                0x0000000000002664       0x26 Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002664                setWires
+                0x000000000000264c       0x4c Output/Release/Obj/spi_pca10040/main.o
+                0x000000000000264c                writeRegister8
  .text.enableBias
-                0x000000000000268a       0x22 Output/Release/Obj/spi_pca10040/main.o
-                0x000000000000268a                enableBias
- .text.autoConvert
-                0x00000000000026ac       0x22 Output/Release/Obj/spi_pca10040/main.o
-                0x00000000000026ac                autoConvert
+                0x0000000000002698       0x22 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000002698                enableBias
  .text.clearFault
-                0x00000000000026ce       0x1a Output/Release/Obj/spi_pca10040/main.o
-                0x00000000000026ce                clearFault
- .text.begin    0x00000000000026e8       0x3c Output/Release/Obj/spi_pca10040/main.o
-                0x00000000000026e8                begin
- .text.readRTD  0x0000000000002724       0x3e Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002724                readRTD
- *fill*         0x0000000000002762        0x6 
+                0x00000000000026ba       0x1a Output/Release/Obj/spi_pca10040/main.o
+                0x00000000000026ba                clearFault
+ .text.readRTD  0x00000000000026d4       0x3e Output/Release/Obj/spi_pca10040/main.o
+                0x00000000000026d4                readRTD
+ *fill*         0x0000000000002712        0x6 
  .text.temperature
-                0x0000000000002768      0x1c8 Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002768                temperature
+                0x0000000000002718      0x1c8 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000002718                temperature
  .text.startup.main
-                0x0000000000002930       0xd4 Output/Release/Obj/spi_pca10040/main.o
-                0x0000000000002930                main
+                0x00000000000028e0      0x128 Output/Release/Obj/spi_pca10040/main.o
+                0x00000000000028e0                main
  .text.nrf52_errata_12
-                0x0000000000002a04       0x1c Output/Release/Obj/spi_pca10040/system_nrf52.o
+                0x0000000000002a08       0x1c Output/Release/Obj/spi_pca10040/system_nrf52.o
  .text.nrf52_errata_16
-                0x0000000000002a20       0x28 Output/Release/Obj/spi_pca10040/system_nrf52.o
+                0x0000000000002a24       0x28 Output/Release/Obj/spi_pca10040/system_nrf52.o
  .text.nrf52_errata_36
-                0x0000000000002a48       0x26 Output/Release/Obj/spi_pca10040/system_nrf52.o
- *fill*         0x0000000000002a6e        0x2 
+                0x0000000000002a4c       0x26 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ *fill*         0x0000000000002a72        0x2 
  .text.nvmc_wait
-                0x0000000000002a70       0x10 Output/Release/Obj/spi_pca10040/system_nrf52.o
-                0x0000000000002a70                nvmc_wait
+                0x0000000000002a74       0x10 Output/Release/Obj/spi_pca10040/system_nrf52.o
+                0x0000000000002a74                nvmc_wait
  .text.SystemInit
-                0x0000000000002a80      0x2ac Output/Release/Obj/spi_pca10040/system_nrf52.o
-                0x0000000000002a80                SystemInit
+                0x0000000000002a84      0x2ac Output/Release/Obj/spi_pca10040/system_nrf52.o
+                0x0000000000002a84                SystemInit
  .text.__aeabi_dadd
-                0x0000000000002d2c      0x244 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x0000000000002d2c                __aeabi_dadd
+                0x0000000000002d30      0x244 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x0000000000002d30                __aeabi_dadd
  .text.__aeabi_dsub
-                0x0000000000002f70        0x8 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x0000000000002f70                __aeabi_dsub
+                0x0000000000002f74        0x8 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x0000000000002f74                __aeabi_dsub
  .text.__aeabi_dmul
-                0x0000000000002f78      0x138 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x0000000000002f78                __aeabi_dmul
+                0x0000000000002f7c      0x138 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x0000000000002f7c                __aeabi_dmul
  .text.__aeabi_ddiv
-                0x00000000000030b0      0x1cc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x00000000000030b0                __aeabi_ddiv
+                0x00000000000030b4      0x1cc C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x00000000000030b4                __aeabi_ddiv
  .text.__aeabi_dcmpeq
-                0x000000000000327c       0x34 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x000000000000327c                __aeabi_dcmpeq
+                0x0000000000003280       0x34 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x0000000000003280                __aeabi_dcmpeq
  .text.__aeabi_dcmplt
-                0x00000000000032b0       0x38 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x00000000000032b0                __aeabi_dcmplt
+                0x00000000000032b4       0x38 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x00000000000032b4                __aeabi_dcmplt
  .text.__aeabi_f2d
-                0x00000000000032e8       0x34 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x00000000000032e8                __aeabi_f2d
+                0x00000000000032ec       0x34 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x00000000000032ec                __aeabi_f2d
  .text.__aeabi_d2f
-                0x000000000000331c       0x54 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x000000000000331c                __aeabi_d2f
+                0x0000000000003320       0x54 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x0000000000003320                __aeabi_d2f
  .text.__float64_isfinite
-                0x0000000000003370       0x14 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
-                0x0000000000003370                __float64_isfinite
+                0x0000000000003374       0x14 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm_asm.o)
+                0x0000000000003374                __float64_isfinite
  .text.libc.frexp
-                0x0000000000003384       0x50 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm2.o)
-                0x0000000000003384                frexpl(long double, int*)
-                0x0000000000003384                frexpl
-                0x0000000000003384                frexp
-                0x0000000000003384                frexp(double, int*)
- *fill*         0x00000000000033d4        0x4 
+                0x0000000000003388       0x50 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm2.o)
+                0x0000000000003388                frexpl(long double, int*)
+                0x0000000000003388                frexpl
+                0x0000000000003388                frexp
+                0x0000000000003388                frexp(double, int*)
  .text.libc.ldexp
                 0x00000000000033d8       0x7c C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm2.o)
                 0x00000000000033d8                ldexpl(long double, int)
@@ -6714,12 +6715,12 @@ Linker script and memory map
                 0x00000000000038fc        0x5 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .rodata.str1.1
                 0x0000000000003901        0x6 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .rodata.begin.str1.1
-                0x0000000000003907       0x29 Output/Release/Obj/spi_pca10040/main.o
  .rodata.main.str1.1
-                0x0000000000003930       0x2f Output/Release/Obj/spi_pca10040/main.o
- *fill*         0x000000000000395f        0x1 
- .rodata        0x0000000000003960       0x10 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000003907       0x4a Output/Release/Obj/spi_pca10040/main.o
+                                         0x4b (size before relaxing)
+ *fill*         0x0000000000003951        0x3 
+ .rodata        0x0000000000003954       0x10 Output/Release/Obj/spi_pca10040/main.o
+ *fill*         0x0000000000003964        0xc 
  .rodata.delay_machine_code.0
                 0x0000000000003970        0x6 Output/Release/Obj/spi_pca10040/main.o
  *fill*         0x0000000000003976        0x2 
@@ -6883,7 +6884,7 @@ Linker script and memory map
                 0x0000000000000001                . = ASSERT (((__tdata_run_start__ == __tdata_run_end__) || ((__tdata_run_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__)), error: .tdata_run is too large to fit in RAM1 memory segment)
                 0x0000000020000034                __bss_load_start__ = ALIGN (__tdata_run_end__, 0x4)
 
-.bss            0x0000000020000034      0x6de
+.bss            0x0000000020000034      0x6e0
                 0x0000000020000034                __bss_start__ = .
  *(.bss .bss.* .gnu.linkonce.b.*)
  .bss.m_async_mode
@@ -6931,15 +6932,17 @@ Linker script and memory map
  .bss.PT100_Temperature
                 0x000000002000070c        0x4 Output/Release/Obj/spi_pca10040/main.o
                 0x000000002000070c                PT100_Temperature
+ .bss.RTD       0x0000000020000710        0x2 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000020000710                RTD
  .bss.fault_state
-                0x0000000020000710        0x1 Output/Release/Obj/spi_pca10040/main.o
-                0x0000000020000710                fault_state
+                0x0000000020000712        0x1 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000020000712                fault_state
  .bss.spi_xfer_done
-                0x0000000020000711        0x1 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000020000713        0x1 Output/Release/Obj/spi_pca10040/main.o
  *(COMMON)
-                0x0000000020000712                __bss_end__ = (__bss_start__ + SIZEOF (.bss))
-                0x00000000000006de                __bss_size__ = SIZEOF (.bss)
-                0x0000000020000712                __bss_load_end__ = __bss_end__
+                0x0000000020000714                __bss_end__ = (__bss_start__ + SIZEOF (.bss))
+                0x00000000000006e0                __bss_size__ = SIZEOF (.bss)
+                0x0000000020000714                __bss_load_end__ = __bss_end__
                 0x0000000000000001                . = ASSERT (((__bss_start__ == __bss_end__) || ((__bss_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__)), error: .bss is too large to fit in RAM1 memory segment)
                 0x0000000020000714                __tbss_load_start__ = ALIGN (__bss_end__, 0x4)
 
@@ -7155,7 +7158,7 @@ LOAD linker stubs
  .comment       0x000000000000003f       0x40 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm2.o)
  .comment       0x000000000000003f       0x40 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
 
-.debug_line     0x0000000000000000    0x12f8a
+.debug_line     0x0000000000000000    0x1306a
  .debug_line    0x0000000000000000      0x21f Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_line    0x000000000000021f      0x6b8 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_line    0x00000000000008d7      0x965 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
@@ -7183,12 +7186,12 @@ LOAD linker stubs
  .debug_line    0x000000000000d63e     0x12df Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_line    0x000000000000e91d     0x17bc Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_line    0x00000000000100d9     0x174a Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_line    0x0000000000011823      0xeba Output/Release/Obj/spi_pca10040/main.o
- .debug_line    0x00000000000126dd       0x89 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
- .debug_line    0x0000000000012766       0xab Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
- .debug_line    0x0000000000012811      0x779 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_line    0x0000000000011823      0xf9a Output/Release/Obj/spi_pca10040/main.o
+ .debug_line    0x00000000000127bd       0x89 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
+ .debug_line    0x0000000000012846       0xab Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
+ .debug_line    0x00000000000128f1      0x779 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_info     0x0000000000000000    0x1e66d
+.debug_info     0x0000000000000000    0x1e61b
  .debug_info    0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_info    0x0000000000000022      0x77b Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_info    0x000000000000079d     0x1139 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
@@ -7216,12 +7219,12 @@ LOAD linker stubs
  .debug_info    0x0000000000012933     0x2918 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_info    0x000000000001524b     0x317f Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_info    0x00000000000183ca     0x335c Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_info    0x000000000001b726     0x19be Output/Release/Obj/spi_pca10040/main.o
- .debug_info    0x000000000001d0e4       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
- .debug_info    0x000000000001d107       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
- .debug_info    0x000000000001d12a     0x1543 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_info    0x000000000001b726     0x196c Output/Release/Obj/spi_pca10040/main.o
+ .debug_info    0x000000000001d092       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
+ .debug_info    0x000000000001d0b5       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
+ .debug_info    0x000000000001d0d8     0x1543 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_abbrev   0x0000000000000000     0x5568
+.debug_abbrev   0x0000000000000000     0x55ae
  .debug_abbrev  0x0000000000000000       0x12 Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_abbrev  0x0000000000000012      0x214 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_abbrev  0x0000000000000226      0x356 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
@@ -7249,10 +7252,10 @@ LOAD linker stubs
  .debug_abbrev  0x0000000000003e1c      0x443 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_abbrev  0x000000000000425f      0x583 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_abbrev  0x00000000000047e2      0x4f0 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_abbrev  0x0000000000004cd2      0x51f Output/Release/Obj/spi_pca10040/main.o
- .debug_abbrev  0x00000000000051f1       0x14 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
- .debug_abbrev  0x0000000000005205       0x14 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
- .debug_abbrev  0x0000000000005219      0x34f Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_abbrev  0x0000000000004cd2      0x565 Output/Release/Obj/spi_pca10040/main.o
+ .debug_abbrev  0x0000000000005237       0x14 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
+ .debug_abbrev  0x000000000000524b       0x14 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
+ .debug_abbrev  0x000000000000525f      0x34f Output/Release/Obj/spi_pca10040/system_nrf52.o
 
 .debug_aranges  0x0000000000000000      0xb50
  .debug_aranges
@@ -7318,7 +7321,7 @@ LOAD linker stubs
  .debug_aranges
                 0x0000000000000b00       0x50 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_str      0x0000000000000000    0x84fd1
+.debug_str      0x0000000000000000    0x84fc0
  .debug_str     0x0000000000000000       0xb0 Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_str     0x00000000000000b0    0x6c2ba Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
                                       0x6d0cb (size before relaxing)
@@ -7372,16 +7375,16 @@ LOAD linker stubs
                                       0x70e43 (size before relaxing)
  .debug_str     0x000000000007bd48      0x944 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
                                       0x712ca (size before relaxing)
- .debug_str     0x000000000007c68c      0x540 Output/Release/Obj/spi_pca10040/main.o
-                                      0x7361b (size before relaxing)
- .debug_str     0x000000000007cbcc       0x4b Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
+ .debug_str     0x000000000007c68c      0x52f Output/Release/Obj/spi_pca10040/main.o
+                                      0x73624 (size before relaxing)
+ .debug_str     0x000000000007cbbb       0x4b Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
                                          0xaa (size before relaxing)
- .debug_str     0x000000000007cc17       0x50 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
+ .debug_str     0x000000000007cc06       0x50 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
                                          0xaf (size before relaxing)
- .debug_str     0x000000000007cc67     0x836a Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_str     0x000000000007cc56     0x836a Output/Release/Obj/spi_pca10040/system_nrf52.o
                                       0x664e5 (size before relaxing)
 
-.debug_ranges   0x0000000000000000     0x2d90
+.debug_ranges   0x0000000000000000     0x2da0
  .debug_ranges  0x0000000000000000       0x90 Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_ranges  0x0000000000000090       0x28 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_ranges  0x00000000000000b8       0x88 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
@@ -7409,10 +7412,10 @@ LOAD linker stubs
  .debug_ranges  0x0000000000001b20      0x498 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_ranges  0x0000000000001fb8      0x638 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_ranges  0x00000000000025f0      0x5c8 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_ranges  0x0000000000002bb8      0x130 Output/Release/Obj/spi_pca10040/main.o
- .debug_ranges  0x0000000000002ce8       0xa8 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_ranges  0x0000000000002bb8      0x140 Output/Release/Obj/spi_pca10040/main.o
+ .debug_ranges  0x0000000000002cf8       0xa8 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_frame    0x0000000000000000     0x1f30
+.debug_frame    0x0000000000000000     0x1f44
  .debug_frame   0x0000000000000000       0x48 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_frame   0x0000000000000048       0xdc Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
  .debug_frame   0x0000000000000124       0x2c Output/Release/Obj/spi_pca10040/nrf_log_default_backends.o
@@ -7439,10 +7442,10 @@ LOAD linker stubs
  .debug_frame   0x0000000000001778       0xf8 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_frame   0x0000000000001870      0x230 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_frame   0x0000000000001aa0      0x180 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_frame   0x0000000000001c20      0x284 Output/Release/Obj/spi_pca10040/main.o
- .debug_frame   0x0000000000001ea4       0x8c Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_frame   0x0000000000001c20      0x298 Output/Release/Obj/spi_pca10040/main.o
+ .debug_frame   0x0000000000001eb8       0x8c Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_loc      0x0000000000000000     0xdbe9
+.debug_loc      0x0000000000000000     0xdc28
  .debug_loc     0x0000000000000000      0x186 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_loc     0x0000000000000186      0x2a6 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
  .debug_loc     0x000000000000042c       0x31 Output/Release/Obj/spi_pca10040/nrf_log_default_backends.o
@@ -7469,11 +7472,11 @@ LOAD linker stubs
  .debug_loc     0x00000000000092ef     0x1288 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_loc     0x000000000000a577     0x15d3 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_loc     0x000000000000bb4a     0x1751 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_loc     0x000000000000d29b      0x7ad Output/Release/Obj/spi_pca10040/main.o
- .debug_loc     0x000000000000da48      0x1a1 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_loc     0x000000000000d29b      0x7ec Output/Release/Obj/spi_pca10040/main.o
+ .debug_loc     0x000000000000da87      0x1a1 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
 .debug_pubnames
-                0x0000000000000000     0x6b80
+                0x0000000000000000     0x6b73
  .debug_pubnames
                 0x0000000000000000       0x31 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_pubnames
@@ -7527,12 +7530,12 @@ LOAD linker stubs
  .debug_pubnames
                 0x0000000000005802      0xc79 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
  .debug_pubnames
-                0x000000000000647b      0x55e Output/Release/Obj/spi_pca10040/main.o
+                0x000000000000647b      0x551 Output/Release/Obj/spi_pca10040/main.o
  .debug_pubnames
-                0x00000000000069d9      0x1a7 Output/Release/Obj/spi_pca10040/system_nrf52.o
+                0x00000000000069cc      0x1a7 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
 .debug_pubtypes
-                0x0000000000000000     0x3e25
+                0x0000000000000000     0x3e31
  .debug_pubtypes
                 0x0000000000000000      0x287 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_pubtypes
@@ -7586,9 +7589,9 @@ LOAD linker stubs
  .debug_pubtypes
                 0x00000000000035aa      0x3c7 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
  .debug_pubtypes
-                0x0000000000003971      0x2f6 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000003971      0x302 Output/Release/Obj/spi_pca10040/main.o
  .debug_pubtypes
-                0x0000000000003c67      0x1be Output/Release/Obj/spi_pca10040/system_nrf52.o
+                0x0000000000003c73      0x1be Output/Release/Obj/spi_pca10040/system_nrf52.o
 
 .debug_macro    0x0000000000000000     0x71a4
  .debug_macro   0x0000000000000000      0x225 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o

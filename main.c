@@ -37,6 +37,10 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "nrf_drv_spi.h"
 #include "app_util_platform.h"
 #include "nrf_gpio.h"
@@ -48,31 +52,26 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-// #include "MAX31865_lib.c"
+// #include "MAX31865_lib.c"            // I want to make own library MAX31865_lib.c for using with nRF52
 #include "MAX31865_lib.h"
 
 /*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
 #define PT100_R0 (double)100.0 		//Resistance of the PT100 sensor, at 0 °C
-#define Rref (double)400.0				//Resistance of the reference resistor connected to the MAX31865
+#define Rref (double)400.0		//Resistance of the reference resistor connected to the MAX31865
 /*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
-
 
 
 #define SPI_INSTANCE  0 /**< SPI instance index. */
 static const nrf_drv_spi_t spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);  /**< SPI instance. */
 static volatile bool spi_xfer_done;  /**< Flag used to indicate that SPI instance completed the transfer. */
 
-//#define TEST_STRING "Nordic"
-//static uint8_t       m_tx_buf[] = TEST_STRING;           /**< TX buffer. */
-//static uint8_t       m_rx_buf[sizeof(TEST_STRING) + 1];    /**< RX buffer. */
-//static const uint8_t m_length = sizeof(m_tx_buf);        /**< Transfer length. */
 
 /**
  * @brief SPI user event handler.
  * @param event
  */
 void spi_event_handler(nrf_drv_spi_evt_t const * p_event,
-                       void *                    p_context)
+                       void *                    p_context)           // From SPI example
 {
     spi_xfer_done = true;
     //NRF_LOG_INFO("Transfer completed.");
@@ -87,17 +86,23 @@ void spi_init(void)
 {
     nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
 
-    spi_config.ss_pin     = SPI_SS_PIN;
-    spi_config.miso_pin   = SPI_MISO_PIN;
-    spi_config.mosi_pin   = SPI_MOSI_PIN;
-    spi_config.sck_pin    = SPI_SCK_PIN;
+    spi_config.ss_pin     = SPI_SS_PIN;               // 31   P0.31   (CS on MAX31865)
+    spi_config.miso_pin   = SPI_MISO_PIN;             // 30   P0.30   (SDO on MAX)
+    spi_config.mosi_pin   = SPI_MOSI_PIN;             // 29   P0.29   (SDI on MAX)
+    spi_config.sck_pin    = SPI_SCK_PIN;              // 26   P0.26   (CLK on MAX)
 
-    spi_config.mode       = NRF_DRV_SPI_MODE_1;
-    spi_config.frequency  = NRF_DRV_SPI_FREQ_125K;
+    spi_config.mode       = NRF_DRV_SPI_MODE_1;       // set up from datasheet (it is able to use spi mode 1 or 3)
+    spi_config.frequency  = NRF_DRV_SPI_FREQ_1M;    // max frequency is 5 MHz
     spi_config.bit_order  = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
 
     APP_ERROR_CHECK(nrf_drv_spi_init(&spi, &spi_config, spi_event_handler, NULL));
 }
+
+
+/**************************Function declaration****************************/
+void spi_init(void);
+void spi_event_handler(nrf_drv_spi_evt_t const * p_event,
+                       void *                    p_context);
 
 bool begin(uint8_t wires);
 
@@ -113,24 +118,22 @@ void enableBias(bool b);
 float temperature(float RTDnominal, float refResistor);
 
 void readRegisterN(uint8_t addr, uint8_t buffer[], uint8_t n);
-
 uint8_t readRegister8(uint8_t addr);
 uint16_t readRegister16(uint8_t addr);
-
 void writeRegister8(uint8_t addr, uint8_t reg);
+/**************************Function declaration****************************/
 
 
-float PT100_Temperature = 0.0f;
-uint8_t fault_state;
+float     PT100_Temperature = 0.0f;
+uint16_t  RTD = 0;
+uint8_t   fault_state;
 
 uint8_t test;
 
-
-
 int main(void)
 {
-    bsp_board_init(BSP_INIT_LEDS);
-    spi_init();
+    bsp_board_init(BSP_INIT_LEDS);          // Initialization of board LEDs
+    spi_init();                             // Initialization of SPI
 
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
     NRF_LOG_DEFAULT_BACKENDS_INIT();
@@ -138,7 +141,7 @@ int main(void)
     NRF_LOG_INFO("\n\n\n");
     NRF_LOG_INFO("SPI example started.");
 
-    begin(1);
+    //begin(1);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
 
     
 
@@ -156,134 +159,26 @@ int main(void)
         //    NRF_LOG_INFO("")
         //}
 
-        bsp_board_led_invert(BSP_BOARD_LED_0);
+        bsp_board_led_invert(BSP_BOARD_LED_0);      // change state of LED 1 
 
-        NRF_LOG_INFO("Fault: ")
-        fault_state = readFault();
+        NRF_LOG_INFO("Fault: ");
+        fault_state = readFault();                  // read the fault of MAX31865
         NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
         
-        NRF_LOG_INFO("Temperature: ")
+        RTD = readRTD();   // read the temperature from MAX31865
 
-        PT100_Temperature = temperature(Rref,PT100_R0);
-        NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
+        NRF_LOG_INFO("RTD value: %d", RTD);
+        
+        PT100_Temperature = temperature(Rref, PT100_R0);
+        NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
+
+        //NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
+
         nrf_delay_ms(500);
 
     }
 }
 
-
-///*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
-//#define MAX31865_PT100_R0 (double)  100.0 		//Resistance of the PT100 sensor, at 0 °C
-//#define MAX31865_Rref (double)      400.0		//Resistance of the reference resistor connected to the MAX31865
-///*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
-
-///*-----------Coefficients from GOST 6651-2009 for sensor type PT100(Platinum TS & PE, 0.00385°C^-1)------------*/
-//#define MAX31865_A (double)         0.0039083
-//#define MAX31865_B (double)         0.0000005775
-///*-----------Coefficients from GOST 6651-2009 for sensor type PT100(Platinum TS & PE, 0.00385°C^-1)------------*/
-
-
-///*------------------------------------------Global variables---------------------------------------------------*/
-//double MAX31865_PT100_R     = 0.0; 				//Global variable defining PT100 sensor resistance
-//double MAX31865_PT100_T     = 0.0; 				//Global variable defining the temperature of the PT100 sensor
-//bool MAX31865_Sensor_Error  = 0; 				//Global variable defining the failure of the PT100 sensor
-///*------------------------------------------Global variables---------------------------------------------------*/
-
-
-
-
-
-
-
-///*=======================INITIALIZING THE MAX31865 MODULE=========================*/
-//void MAX31865_Init(uint8_t num_wires) {
-//	///Initialization function of the MAX31865 module
-//	///I don't see much sense in displaying the full module setting, so let's make
-//	///small simplification for the end user
-//	///all that the user can configure is to select the type of connection
-//	///2,3 or 4-wire
-//	/// \param num_wires - sensor connection type 2,3 or 4 wire
-
-//	uint8_t MAX31865_Reinitialization_cnt = 0;
-//	MAX31865_Sensor_Error = 0;
-//	uint8_t MAX31865_Configuration_register_write[] = { 0x80, 0x00 };
-//	if (num_wires == 2 || num_wires == 4) {
-//		MAX31865_Configuration_register_write[1] = 0xC3; //0xC3
-//	} else if (num_wires == 3) {
-//		MAX31865_Configuration_register_write[1] = 0xD3; //0xD3
-//	}
-
-//        memset(m_rx_buf, 0, m_length);
-//        spi_xfer_done = false;
-
-//        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, MAX31865_Configuration_register_write, 2, NULL, 0));
-
-//        while (!spi_xfer_done)
-//        {
-//            __WFE();
-//        }
-
-//        NRF_LOG_FLUSH();
-
-//        bsp_board_led_invert(BSP_BOARD_LED_0);
-
-//	//In order to reach the sensor after power-up, as initialization may not take place the first time, we start a loop.
-//	while (MAX31865_Configuration_info() != 0xD1 || MAX31865_Configuration_info() != 0xC1) {
-//		MAX31865_Reinitialization_cnt++;
-
-//		        memset(m_rx_buf, 0, m_length);
-//                        spi_xfer_done = false;
-
-//                        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, MAX31865_Configuration_register_write, 2, NULL, 0));
-
-//                        while (!spi_xfer_done)
-//                        {
-//                            __WFE();
-//                        }
-
-//                        NRF_LOG_FLUSH();
-
-//                        bsp_board_led_invert(BSP_BOARD_LED_0);
-
-//		if (MAX31865_Reinitialization_cnt == 100) {
-//                        NRF_LOG_INFO("Initialization MAX31865 != OK");
-//			break;
-//		}
-
-//	}
-
-//}
-///*=======================INITIALIZING THE MAX31865 MODULE=========================*/
-
-
-///*====================MAX31865 CONFIGURATION INFORMATION===================*/
-//uint8_t MAX31865_Configuration_info(void) {
-//	//Function for retrieving configuration information of the MAX31865 module
-//	///retrieves configuration value.
-//	/// Don't be surprised if you send 0xC3 during initialization and get 0xC1
-//	///(see datasheet MAX31865 p.14 "The fault status clear bit D1, self-clears to 0.")
-
-//	uint8_t read_data = 0x00;
-//	uint8_t MAX31865_Configuration = 0x00;
-
-//        spi_xfer_done = false;
-
-//        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, read_data, 1, MAX31865_Configuration, 1));
-
-//        while (!spi_xfer_done)
-//        {
-//            __WFE();
-//        }
-
-//        NRF_LOG_FLUSH();
-
-//        bsp_board_led_invert(BSP_BOARD_LED_0);
-
-//	NRF_LOG_INFO("Configuration Received:");
-//        NRF_LOG_HEXDUMP_INFO(MAX31865_Configuration, strlen((const char *)MAX31865_Configuration));
-//	return MAX31865_Configuration;
-//}
-///*====================MAX31865 CONFIGURATION INFORMATION===================*/
 
 
 /**************************************************************************/
@@ -301,8 +196,7 @@ bool begin(uint8_t wires)
     autoConvert(false);
     clearFault();
 
-    NRF_LOG_INFO("Initialization of MAX31865 was succesful");
-
+    NRF_LOG_INFO("Initialization of MAX31865 was succesful");     // Withoute testing so, it could not be true... 
     return true;
 }
 
@@ -428,8 +322,6 @@ float temperature(float RTDnominal,
     Rt /= 32768;
     Rt *= refResistor;
 
-    // Serial.print("\nResistance: "); Serial.println(Rt, 8);
-
     Z1 = -RTD_A;
     Z2 = RTD_A * RTD_A - (4 * RTD_B);
     Z3 = (4 * RTD_B) / RTDnominal;
@@ -480,7 +372,7 @@ uint16_t readRTD(void)
 
     uint16_t rtd = readRegister16(MAX31865_RTDMSB_REG);
 
-    enableBias(false); // Disable bias current again to reduce selfheating.
+    enableBias(false); // Disable bias current again to reduce selfheating of PT100.
 
     // remove fault
     rtd >>= 1;
@@ -490,27 +382,23 @@ uint16_t readRTD(void)
 
 
 
-
-
-
-
 void readRegisterN( uint8_t addr, 
                     uint8_t buffer[],
                     uint8_t n) 
 {
-    //addr &= 0x7F;                                   // make sure top bit is not set
+    addr &= 0x7F;                                   // make sure top bit is not set
 
-    nrf_drv_spi_xfer_desc_t   xfer_desc;
-    xfer_desc.p_tx_buffer = &addr;
-    xfer_desc.tx_length   = sizeof(addr);
-    xfer_desc.p_rx_buffer = buffer;
-    xfer_desc.rx_length   = n;
+    //nrf_drv_spi_xfer_desc_t   xfer_desc;
+    //xfer_desc.p_tx_buffer = &addr;
+    //xfer_desc.tx_length   = sizeof(addr);
+    //xfer_desc.p_rx_buffer = buffer;
+    //xfer_desc.rx_length   = n;
 
     spi_xfer_done = false;
 
-    APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));
+    //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
 
-    //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, &buffer, n));
+    APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, &buffer, n));
 
     while (!spi_xfer_done)
     {
@@ -519,7 +407,7 @@ void readRegisterN( uint8_t addr,
 
     NRF_LOG_FLUSH();
     
-    return buffer;
+    return &buffer;
 }
 
 

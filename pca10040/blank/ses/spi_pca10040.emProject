@@ -96,9 +96,6 @@
           <configuration Name="Release" build_exclude_from_build="Yes" />
         </file>
         <file file_name="../../../MAX31865/MAX31865_lib.h" />
-        <file file_name="Ada_MAX31865.c">
-          <configuration Name="Release" build_exclude_from_build="Yes" />
-        </file>
       </folder>
     </folder>
     <folder Name="nRF_Segger_RTT">
