@@ -92,7 +92,7 @@ void spi_init(void)
     spi_config.sck_pin    = SPI_SCK_PIN;              // 26   P0.26   (CLK on MAX)
 
     spi_config.mode       = NRF_DRV_SPI_MODE_1;       // set up from datasheet (it is able to use spi mode 1 or 3)
-    spi_config.frequency  = NRF_DRV_SPI_FREQ_1M;    // max frequency is 5 MHz
+    spi_config.frequency  = NRF_DRV_SPI_FREQ_1M;      // max frequency is 5 MHz
     spi_config.bit_order  = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
 
     APP_ERROR_CHECK(nrf_drv_spi_init(&spi, &spi_config, spi_event_handler, NULL));
@@ -124,11 +124,11 @@ void writeRegister8(uint8_t addr, uint8_t reg);
 /**************************Function declaration****************************/
 
 
-float     PT100_Temperature = 0.0f;
-uint16_t  RTD = 0;
-uint8_t   fault_state;
+float     PT100_Temperature = 0.0f;   // actual temperature from sensor
+uint16_t  RTD = 0;        // RTD value
+uint8_t   fault_state;    // variable for fault code
 
-uint8_t test;
+uint8_t test;             // variable for testing
 
 int main(void)
 {
@@ -141,7 +141,7 @@ int main(void)
     NRF_LOG_INFO("\n\n\n");
     NRF_LOG_INFO("SPI example started.");
 
-    //begin(1);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
+    begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
 
     
 
@@ -165,14 +165,12 @@ int main(void)
         fault_state = readFault();                  // read the fault of MAX31865
         NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
         
-        RTD = readRTD();   // read the temperature from MAX31865
+        RTD = readRTD();                            // read the RTD value from MAX31865
 
         NRF_LOG_INFO("RTD value: %d", RTD);
         
-        PT100_Temperature = temperature(Rref, PT100_R0);
+        PT100_Temperature = temperature(Rref, PT100_R0);    // read the temperature from MAX31865
         NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
-
-        //NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
 
         nrf_delay_ms(500);
 
