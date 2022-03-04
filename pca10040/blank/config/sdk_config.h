@@ -209,7 +209,7 @@
 // <4294967295=> Not connected 
 
 #ifndef SPI_SS_PIN
-#define SPI_SS_PIN 31
+#define SPI_SS_PIN 31 //4294967295 // 31
 #endif
 
 // <o> SPI_IRQ_PRIORITY  - Interrupt priority

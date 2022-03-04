@@ -51,6 +51,7 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "math.h"
 
 // #include "MAX31865_lib.c"            // I want to make own library MAX31865_lib.c for using with nRF52
 #include "MAX31865_lib.h"
@@ -94,6 +95,7 @@ void spi_init(void)
     spi_config.mode       = NRF_DRV_SPI_MODE_1;       // set up from datasheet (it is able to use spi mode 1 or 3)
     spi_config.frequency  = NRF_DRV_SPI_FREQ_1M;      // max frequency is 5 MHz
     spi_config.bit_order  = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
+    
 
     APP_ERROR_CHECK(nrf_drv_spi_init(&spi, &spi_config, spi_event_handler, NULL));
 }
@@ -133,6 +135,8 @@ uint8_t test;             // variable for testing
 int main(void)
 {
     bsp_board_init(BSP_INIT_LEDS);          // Initialization of board LEDs
+
+    
     spi_init();                             // Initialization of SPI
 
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -141,7 +145,7 @@ int main(void)
     NRF_LOG_INFO("\n\n\n");
     NRF_LOG_INFO("SPI example started.");
 
-    begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
+    //begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
 
     
 
@@ -163,7 +167,7 @@ int main(void)
 
         NRF_LOG_INFO("Fault: ");
         fault_state = readFault();                  // read the fault of MAX31865
-        NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
+        //TODO //NRF_LOG_HEXDUMP_INFO(fault_state, 1);  // TODO fce -> itoa int to string
         
         RTD = readRTD();                            // read the RTD value from MAX31865
 
@@ -172,8 +176,7 @@ int main(void)
         PT100_Temperature = temperature(Rref, PT100_R0);    // read the temperature from MAX31865
         NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
 
-        nrf_delay_ms(500);
-
+        nrf_delay_ms(1000);
     }
 }
 
@@ -190,11 +193,20 @@ int main(void)
 bool begin(uint8_t wires)
 {
     setWires(wires);
+
+    uint8_t test;
+
+    test = readRegister8(0x00);
+    NRF_LOG_INFO("Output value: %d", test);
+
+    test = readRegister8(0x03);
+    NRF_LOG_INFO("Output value: %d", test);
+
     enableBias(false);
     autoConvert(false);
     clearFault();
 
-    NRF_LOG_INFO("Initialization of MAX31865 was succesful");     // Withoute testing so, it could not be true... 
+    NRF_LOG_INFO("Initialization of MAX31865 was succesful");     // Without testing so, it could not be true... 
     return true;
 }
 
@@ -363,7 +375,8 @@ uint16_t readRTD(void)
     clearFault();
     enableBias(true);
     nrf_delay_ms(10);
-    uint8_t t = readRegister8(MAX31865_CONFIG_REG);
+    uint8_t t;
+    t = readRegister8(MAX31865_CONFIG_REG);
     t |= MAX31865_CONFIG_1SHOT;
     writeRegister8(MAX31865_CONFIG_REG, t);
     nrf_delay_ms(65);
@@ -381,8 +394,8 @@ uint16_t readRTD(void)
 
 
 void readRegisterN( uint8_t addr, 
-                    uint8_t buffer[],
-                    uint8_t n) 
+                    uint8_t *buffer,
+                    uint8_t n)
 {
     addr &= 0x7F;                                   // make sure top bit is not set
 
@@ -396,7 +409,13 @@ void readRegisterN( uint8_t addr,
 
     //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
 
-    APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, &buffer, n));
+    //nrf_gpio_pin_set(31);
+    //nrf_delay_ms(1);
+    
+    APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, buffer, n));
+    
+    //nrf_delay_ms(1);
+    //nrf_gpio_pin_clear(31);
 
     while (!spi_xfer_done)
     {
@@ -404,8 +423,6 @@ void readRegisterN( uint8_t addr,
     }
 
     NRF_LOG_FLUSH();
-    
-    return &buffer;
 }
 
 
@@ -439,7 +456,7 @@ void writeRegister8(uint8_t addr,
     uint8_t buffer[2] = {addr, data};
 
     spi_xfer_done = false;
-    APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &buffer, 2, NULL, 0));
+    APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, buffer, 2, NULL, 0));
 
     while (!spi_xfer_done)
     {
