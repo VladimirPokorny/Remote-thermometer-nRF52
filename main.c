@@ -194,13 +194,13 @@ bool begin(uint8_t wires)
 {
     setWires(wires);
 
-    uint8_t test;
+    //uint8_t test;
 
-    test = readRegister8(0x00);
-    NRF_LOG_INFO("Output value: %d", test);
+    //test = readRegister8(0x00);
+    //NRF_LOG_INFO("Output value: %d", test);
 
-    test = readRegister8(0x03);
-    NRF_LOG_INFO("Output value: %d", test);
+    //test = readRegister8(0x03);
+    //NRF_LOG_INFO("Output value: %d", test);
 
     enableBias(false);
     autoConvert(false);

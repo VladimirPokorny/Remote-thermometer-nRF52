@@ -3387,8 +3387,8 @@ Discarded input sections
  .text.autoConvert
                 0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/main.o
  .rodata.begin.str1.1
-                0x0000000000000000       0x3a Output/Release/Obj/spi_pca10040/main.o
- .text.begin    0x0000000000000000       0x60 Output/Release/Obj/spi_pca10040/main.o
+                0x0000000000000000       0x29 Output/Release/Obj/spi_pca10040/main.o
+ .text.begin    0x0000000000000000       0x3c Output/Release/Obj/spi_pca10040/main.o
  .text.enable50Hz
                 0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/main.o
  .bss.test      0x0000000000000000        0x1 Output/Release/Obj/spi_pca10040/main.o
@@ -7158,7 +7158,7 @@ LOAD linker stubs
  .comment       0x000000000000003f       0x40 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libm_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libm2.o)
  .comment       0x000000000000003f       0x40 C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.70a/lib/libc_v7em_fpv4_sp_d16_hard_t_le_eabi.a(libc2.o)
 
-.debug_line     0x0000000000000000    0x1305f
+.debug_line     0x0000000000000000    0x13034
  .debug_line    0x0000000000000000      0x21f Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_line    0x000000000000021f      0x6b8 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_line    0x00000000000008d7      0x965 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
@@ -7186,12 +7186,12 @@ LOAD linker stubs
  .debug_line    0x000000000000d63e     0x12df Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_line    0x000000000000e91d     0x17bc Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_line    0x00000000000100d9     0x174a Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_line    0x0000000000011823      0xf8f Output/Release/Obj/spi_pca10040/main.o
- .debug_line    0x00000000000127b2       0x89 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
- .debug_line    0x000000000001283b       0xab Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
- .debug_line    0x00000000000128e6      0x779 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_line    0x0000000000011823      0xf64 Output/Release/Obj/spi_pca10040/main.o
+ .debug_line    0x0000000000012787       0x89 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
+ .debug_line    0x0000000000012810       0xab Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
+ .debug_line    0x00000000000128bb      0x779 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_info     0x0000000000000000    0x1e63d
+.debug_info     0x0000000000000000    0x1e5c3
  .debug_info    0x0000000000000000       0x22 Output/Release/Obj/spi_pca10040/thumb_crt0.o
  .debug_info    0x0000000000000022      0x77b Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_info    0x000000000000079d     0x1139 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
@@ -7219,10 +7219,10 @@ LOAD linker stubs
  .debug_info    0x0000000000012933     0x2918 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_info    0x000000000001524b     0x317f Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_info    0x00000000000183ca     0x335c Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_info    0x000000000001b726     0x198e Output/Release/Obj/spi_pca10040/main.o
- .debug_info    0x000000000001d0b4       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
- .debug_info    0x000000000001d0d7       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
- .debug_info    0x000000000001d0fa     0x1543 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_info    0x000000000001b726     0x1914 Output/Release/Obj/spi_pca10040/main.o
+ .debug_info    0x000000000001d03a       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf52.o
+ .debug_info    0x000000000001d05d       0x23 Output/Release/Obj/spi_pca10040/ses_startup_nrf_common.o
+ .debug_info    0x000000000001d080     0x1543 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
 .debug_abbrev   0x0000000000000000     0x5588
  .debug_abbrev  0x0000000000000000       0x12 Output/Release/Obj/spi_pca10040/thumb_crt0.o
@@ -7445,7 +7445,7 @@ LOAD linker stubs
  .debug_frame   0x0000000000001c20      0x294 Output/Release/Obj/spi_pca10040/main.o
  .debug_frame   0x0000000000001eb4       0x8c Output/Release/Obj/spi_pca10040/system_nrf52.o
 
-.debug_loc      0x0000000000000000     0xdc78
+.debug_loc      0x0000000000000000     0xdc56
  .debug_loc     0x0000000000000000      0x186 Output/Release/Obj/spi_pca10040/nrf_log_backend_serial.o
  .debug_loc     0x0000000000000186      0x2a6 Output/Release/Obj/spi_pca10040/nrf_log_backend_uart.o
  .debug_loc     0x000000000000042c       0x31 Output/Release/Obj/spi_pca10040/nrf_log_default_backends.o
@@ -7472,8 +7472,8 @@ LOAD linker stubs
  .debug_loc     0x00000000000092ef     0x1288 Output/Release/Obj/spi_pca10040/nrfx_spim.o
  .debug_loc     0x000000000000a577     0x15d3 Output/Release/Obj/spi_pca10040/nrfx_uart.o
  .debug_loc     0x000000000000bb4a     0x1751 Output/Release/Obj/spi_pca10040/nrfx_uarte.o
- .debug_loc     0x000000000000d29b      0x83c Output/Release/Obj/spi_pca10040/main.o
- .debug_loc     0x000000000000dad7      0x1a1 Output/Release/Obj/spi_pca10040/system_nrf52.o
+ .debug_loc     0x000000000000d29b      0x81a Output/Release/Obj/spi_pca10040/main.o
+ .debug_loc     0x000000000000dab5      0x1a1 Output/Release/Obj/spi_pca10040/system_nrf52.o
 
 .debug_pubnames
                 0x0000000000000000     0x6b6a
