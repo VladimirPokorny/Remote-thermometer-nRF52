@@ -176,6 +176,7 @@ int main(void)
 
     while (1)
     {
+
         //for (uint8_t i = 0; i <= 0xFF; i++)
         //{   
         //    NRF_LOG_INFO("Transfered: %d", i)
