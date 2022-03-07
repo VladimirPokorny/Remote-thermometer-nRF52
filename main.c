@@ -92,7 +92,7 @@ void spi_init(void)
     spi_config.mosi_pin   = SPI_MOSI_PIN;             // 29   P0.29   (SDI on MAX)
     spi_config.sck_pin    = SPI_SCK_PIN;              // 26   P0.26   (CLK on MAX)
 
-    spi_config.mode       = NRF_DRV_SPI_MODE_3;       // set up from datasheet (it is able to use spi mode 1 or 3)
+    spi_config.mode       = NRF_DRV_SPI_MODE_1;       // set up from datasheet (it is able to use spi mode 1 or 3)
     spi_config.frequency  = NRF_DRV_SPI_FREQ_500K;      // max frequency is 5 MHz
     spi_config.bit_order  = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
     
@@ -146,73 +146,138 @@ int main(void)
     NRF_LOG_FLUSH();
 
 
-    nrf_delay_ms(500);
     begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
-
-    nrf_delay_ms(2000);
 
     while (1)
     {
-        for (int i = 0; i <= 10; i++)
-        {
-                uint8_t buffer[2];
-                uint8_t init_b[] = {0x80, 0xC3};
-                uint8_t addr;
-
-                nrf_gpio_pin_clear(31);
-                
-                spi_xfer_done = false;
-    
-                APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &init_b, 2, NULL, 0));
-
-                while (!spi_xfer_done)
-                {
-                    __WFE();
-                }
-                nrf_gpio_pin_set(31);
-
-                nrf_gpio_pin_clear(31);
-
-                addr = 0x00;
-                spi_xfer_done = false;
-    
-                APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 2));
-
-                while (!spi_xfer_done)
-                {
-                    __WFE();
-                }
-                nrf_gpio_pin_set(31);
-        }
 
         nrf_delay_ms(500);
 
-        uint8_t addr = 0x01;
+        uint8_t addr = 0x83;                                   // make sure top bit is not set
+
         spi_xfer_done = false;
 
-        nrf_gpio_pin_clear(31);
-
-        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 0));
+    
+        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 2));
 
         while (!spi_xfer_done)
         {
             __WFE();
         }
 
-        addr = 0x01;
+
+
+
+        nrf_delay_ms(500);
+
+        addr = 0x80;                                   // make sure top bit is not set
+
         spi_xfer_done = false;
 
-        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, NULL, 0, NULL, 2));
+    
+        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 2));
 
         while (!spi_xfer_done)
         {
             __WFE();
         }
 
-        nrf_gpio_pin_set(31);
 
-        nrf_delay_ms(200);
+
+        //nrf_delay_ms(100);
+  
+        //clearFault();
+        //nrf_delay_ms(100);
+
+        //enableBias(true);
+        //nrf_delay_ms(100);
+
+        //enableBias(false);
+        //nrf_delay_ms(100);
+
+        //autoConvert(true);
+        //nrf_delay_ms(100);
+
+        //autoConvert(false);
+        //nrf_delay_ms(100);
+  
+        //enable50Hz(false);
+        //nrf_delay_ms(100);
+
+        //enable50Hz(true);
+        //nrf_delay_ms(100);
+
+        //setWires(MAX31865_3WIRE);
+        //nrf_delay_ms(100);
+
+        //setWires(MAX31865_2WIRE);
+        //nrf_delay_ms(100);
+
+        //readRTD();
+        //nrf_delay_ms(100);
+
+
     }
+        //for (int i = 0; i <= 10; i++)
+        //{
+        //        uint8_t buffer[2];
+        //        uint8_t init_b[] = {0x80, 0xC3};
+        //        uint8_t addr;
+
+        //        nrf_gpio_pin_clear(31);
+                
+        //        spi_xfer_done = false;
+    
+        //        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &init_b, 2, NULL, 0));
+
+        //        while (!spi_xfer_done)
+        //        {
+        //            __WFE();
+        //        }
+        //        nrf_gpio_pin_set(31);
+
+        //        nrf_gpio_pin_clear(31);
+
+        //        addr = 0x00;
+        //        spi_xfer_done = false;
+    
+        //        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 2));
+
+        //        while (!spi_xfer_done)
+        //        {
+        //            __WFE();
+        //        }
+        //        nrf_gpio_pin_set(31);
+        //}
+
+        //nrf_delay_ms(500);
+
+        //uint8_t addr = 0x01;
+        //spi_xfer_done = false;
+
+        //nrf_gpio_pin_clear(31);
+
+        //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 0));
+
+        //while (!spi_xfer_done)
+        //{
+        //    __WFE();
+        //}
+
+        //addr = 0x01;
+        //spi_xfer_done = false;
+
+        //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, NULL, 0, NULL, 2));
+
+        //while (!spi_xfer_done)
+        //{
+        //    __WFE();
+        //}
+
+        //nrf_gpio_pin_set(31);
+
+        //nrf_delay_ms(200);
+    
 }
 
 
@@ -434,30 +499,15 @@ void readRegisterN( uint8_t addr,
 {
     addr &= 0x7F;                                   // make sure top bit is not set
 
-    //nrf_drv_spi_xfer_desc_t   xfer_desc;
-    //xfer_desc.p_tx_buffer = &addr;
-    //xfer_desc.tx_length   = sizeof(addr);
-    //xfer_desc.p_rx_buffer = buffer;
-    //xfer_desc.rx_length   = n;
-
     spi_xfer_done = false;
 
-    //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
-
-    //nrf_gpio_pin_set(31);
-    //nrf_delay_ms(1);
     
     APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, buffer, n));
-    
-    //nrf_delay_ms(1);
-    //nrf_gpio_pin_clear(31);
 
     while (!spi_xfer_done)
     {
         __WFE();
     }
-
-    NRF_LOG_FLUSH();
 }
 
 
