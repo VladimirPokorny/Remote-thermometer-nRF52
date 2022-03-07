@@ -145,9 +145,34 @@ int main(void)
     NRF_LOG_INFO("\n\n\n");
     NRF_LOG_INFO("SPI example started.");
 
-    //begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
+
+    nrf_delay_ms(500);
+    begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
 
     
+    
+    //spi_xfer_done = false;
+
+    //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
+
+    //nrf_gpio_pin_set(31);
+    //nrf_delay_ms(1);
+
+    //uint8_t addr = 0x00;
+    //uint8_t buffer[2];
+
+    
+    //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, buffer, 2));
+
+
+    //while (!spi_xfer_done)
+    //{
+    //    __WFE();
+    //}
+
+    //NRF_LOG_FLUSH();
+
+
 
     while (1)
     {
@@ -163,20 +188,20 @@ int main(void)
         //    NRF_LOG_INFO("")
         //}
 
-        bsp_board_led_invert(BSP_BOARD_LED_0);      // change state of LED 1 
+        //bsp_board_led_invert(BSP_BOARD_LED_0);      // change state of LED 1 
 
-        NRF_LOG_INFO("Fault: ");
-        fault_state = readFault();                  // read the fault of MAX31865
-        //TODO //NRF_LOG_HEXDUMP_INFO(fault_state, 1);  // TODO fce -> itoa int to string
+        //NRF_LOG_INFO("Fault: ");
+        //fault_state = readFault();                  // read the fault of MAX31865
+        ////TODO //NRF_LOG_HEXDUMP_INFO(fault_state, 1);  // TODO fce -> itoa int to string
         
-        RTD = readRTD();                            // read the RTD value from MAX31865
+        //RTD = readRTD();                            // read the RTD value from MAX31865
 
-        NRF_LOG_INFO("RTD value: %d", RTD);
+        //NRF_LOG_INFO("RTD value: %d", RTD);
         
-        PT100_Temperature = temperature(Rref, PT100_R0);    // read the temperature from MAX31865
-        NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
+        //PT100_Temperature = temperature(Rref, PT100_R0);    // read the temperature from MAX31865
+        //NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
 
-        nrf_delay_ms(1000);
+        //nrf_delay_ms(1000);
     }
 }
 
