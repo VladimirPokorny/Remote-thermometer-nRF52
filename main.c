@@ -92,8 +92,8 @@ void spi_init(void)
     spi_config.mosi_pin   = SPI_MOSI_PIN;             // 29   P0.29   (SDI on MAX)
     spi_config.sck_pin    = SPI_SCK_PIN;              // 26   P0.26   (CLK on MAX)
 
-    spi_config.mode       = NRF_DRV_SPI_MODE_1;       // set up from datasheet (it is able to use spi mode 1 or 3)
-    spi_config.frequency  = NRF_DRV_SPI_FREQ_1M;      // max frequency is 5 MHz
+    spi_config.mode       = NRF_DRV_SPI_MODE_3;       // set up from datasheet (it is able to use spi mode 1 or 3)
+    spi_config.frequency  = NRF_DRV_SPI_FREQ_500K;      // max frequency is 5 MHz
     spi_config.bit_order  = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
     
 
@@ -135,8 +135,7 @@ uint8_t test;             // variable for testing
 int main(void)
 {
     bsp_board_init(BSP_INIT_LEDS);          // Initialization of board LEDs
-
-    
+    nrf_gpio_cfg_output(31);
     spi_init();                             // Initialization of SPI
 
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -144,65 +143,75 @@ int main(void)
 
     NRF_LOG_INFO("\n\n\n");
     NRF_LOG_INFO("SPI example started.");
+    NRF_LOG_FLUSH();
 
 
     nrf_delay_ms(500);
     begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
 
-    
-    
-    //spi_xfer_done = false;
-
-    //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
-
-    //nrf_gpio_pin_set(31);
-    //nrf_delay_ms(1);
-
-    //uint8_t addr = 0x00;
-    //uint8_t buffer[2];
-
-    
-    //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, buffer, 2));
-
-
-    //while (!spi_xfer_done)
-    //{
-    //    __WFE();
-    //}
-
-    //NRF_LOG_FLUSH();
-
-
+    nrf_delay_ms(2000);
 
     while (1)
     {
+        for (int i = 0; i <= 10; i++)
+        {
+                uint8_t buffer[2];
+                uint8_t init_b[] = {0x80, 0xC3};
+                uint8_t addr;
 
-        //for (uint8_t i = 0; i <= 0xFF; i++)
-        //{   
-        //    NRF_LOG_INFO("Transfered: %d", i)
-        //    NRF_LOG_HEXDUMP_INFO(i, strlen((const char *)i));
-        //    fault_state = readRegister16(i);
+                nrf_gpio_pin_clear(31);
+                
+                spi_xfer_done = false;
+    
+                APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &init_b, 2, NULL, 0));
 
-        //    NRF_LOG_INFO("Received: %d", fault_state);
-        //    NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
-        //    nrf_delay_ms(1);
-        //    NRF_LOG_INFO("")
-        //}
+                while (!spi_xfer_done)
+                {
+                    __WFE();
+                }
+                nrf_gpio_pin_set(31);
 
-        //bsp_board_led_invert(BSP_BOARD_LED_0);      // change state of LED 1 
+                nrf_gpio_pin_clear(31);
 
-        //NRF_LOG_INFO("Fault: ");
-        //fault_state = readFault();                  // read the fault of MAX31865
-        ////TODO //NRF_LOG_HEXDUMP_INFO(fault_state, 1);  // TODO fce -> itoa int to string
-        
-        //RTD = readRTD();                            // read the RTD value from MAX31865
+                addr = 0x00;
+                spi_xfer_done = false;
+    
+                APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 2));
 
-        //NRF_LOG_INFO("RTD value: %d", RTD);
-        
-        //PT100_Temperature = temperature(Rref, PT100_R0);    // read the temperature from MAX31865
-        //NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
+                while (!spi_xfer_done)
+                {
+                    __WFE();
+                }
+                nrf_gpio_pin_set(31);
+        }
 
-        //nrf_delay_ms(1000);
+        nrf_delay_ms(500);
+
+        uint8_t addr = 0x01;
+        spi_xfer_done = false;
+
+        nrf_gpio_pin_clear(31);
+
+        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 0));
+
+        while (!spi_xfer_done)
+        {
+            __WFE();
+        }
+
+        addr = 0x01;
+        spi_xfer_done = false;
+
+        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, NULL, 0, NULL, 2));
+
+        while (!spi_xfer_done)
+        {
+            __WFE();
+        }
+
+        nrf_gpio_pin_set(31);
+
+        nrf_delay_ms(200);
     }
 }
 
@@ -455,7 +464,7 @@ void readRegisterN( uint8_t addr,
 uint8_t readRegister8(uint8_t addr) 
 {
     uint8_t ret = 0;
-    readRegisterN(addr, &ret, 1);
+    readRegisterN(addr, &ret, 2);
 
     return ret;
 }
@@ -464,7 +473,7 @@ uint8_t readRegister8(uint8_t addr)
 uint16_t readRegister16(uint8_t addr) 
 {
     uint8_t buffer[2] = {0, 0};
-    readRegisterN(addr, buffer, 2);
+    readRegisterN(addr, buffer, 4);
 
     uint16_t ret = buffer[0];
     ret <<= 8;
