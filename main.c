@@ -440,14 +440,14 @@ float temperature_new(float RTDnominal,
 
     Rt = 0;
     Rt = readRTD();
-    Rt /= 32768;
-    Rt *= refResistor;
+    Rt = Rt / 32;
+    temp = Rt - 256;
 
-    a = RTDnominal * RTD_B;
-    b = RTDnominal * RTD_A;
-    c = RTDnominal - Rt;
+    //a = RTDnominal * RTD_B;
+    //b = RTDnominal * RTD_A;
+    //c = RTDnominal - Rt;
 
-    temp = (- b + sqrt(b * b - 4 * a * c))/(2 * a);
+    //temp = (- b + sqrt(b * b - 4 * a * c))/(2 * a);
 
 
     //Z1 = -RTD_A;
