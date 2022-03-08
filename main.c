@@ -58,7 +58,7 @@
 
 /*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
 #define PT100_R0 (double)100.0 		//Resistance of the PT100 sensor, at 0 °C
-#define Rref (double)400.0		//Resistance of the reference resistor connected to the MAX31865
+#define Rref (double)431.0		//Resistance of the reference resistor connected to the MAX31865
 /*------The characteristics of the PT100 sensor type and the reference resistor connected to the MAX31865------*/
 
 
@@ -75,12 +75,6 @@ void spi_event_handler(nrf_drv_spi_evt_t const * p_event,
                        void *                    p_context)           // From SPI example
 {
     spi_xfer_done = true;
-    //NRF_LOG_INFO("Transfer completed.");
-    //if (m_rx_buf[0] != 0)
-    //{
-    //    NRF_LOG_INFO(" Received:");
-    //    NRF_LOG_HEXDUMP_INFO(m_rx_buf, strlen((const char *)m_rx_buf));
-    //}
 }
 
 void spi_init(void)
@@ -93,7 +87,7 @@ void spi_init(void)
     spi_config.sck_pin    = SPI_SCK_PIN;              // 26   P0.26   (CLK on MAX)
 
     spi_config.mode       = NRF_DRV_SPI_MODE_1;       // set up from datasheet (it is able to use spi mode 1 or 3)
-    spi_config.frequency  = NRF_DRV_SPI_FREQ_1M;      // max frequency is 5 MHz
+    spi_config.frequency  = NRF_DRV_SPI_FREQ_500K;    // max frequency is 5 MHz
     spi_config.bit_order  = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST;
     
 
@@ -102,9 +96,9 @@ void spi_init(void)
 
 
 /**************************Function declaration****************************/
-void spi_init(void);
-void spi_event_handler(nrf_drv_spi_evt_t const * p_event,
-                       void *                    p_context);
+//void spi_init(void);
+//void spi_event_handler(nrf_drv_spi_evt_t const * p_event,
+//                       void *                    p_context);
 
 bool begin(uint8_t wires);
 
@@ -118,6 +112,7 @@ void enable50Hz(bool b);
 void enableBias(bool b);
 
 float temperature(float RTDnominal, float refResistor);
+float temperature_new(float RTDnominal, float refResistor);
 
 void readRegisterN(uint8_t addr, uint8_t buffer[], uint8_t n);
 uint8_t readRegister8(uint8_t addr);
@@ -127,6 +122,7 @@ void writeRegister8(uint8_t addr, uint8_t reg);
 
 
 float     PT100_Temperature = 0.0f;   // actual temperature from sensor
+float     PT100_Temperature_new = 0.0f;   // actual temperature from sensor
 uint16_t  RTD = 0;        // RTD value
 uint8_t   fault_state;    // variable for fault code
 
@@ -135,8 +131,6 @@ uint8_t test;             // variable for testing
 int main(void)
 {
     bsp_board_init(BSP_INIT_LEDS);          // Initialization of board LEDs
-
-    
     spi_init();                             // Initialization of SPI
 
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -144,65 +138,109 @@ int main(void)
 
     NRF_LOG_INFO("\n\n\n");
     NRF_LOG_INFO("SPI example started.");
+    NRF_LOG_FLUSH();
 
 
-    nrf_delay_ms(500);
     begin(0);                               // Initialization of MAX31865 -> 0 means 2 wire measuring with PT100
-
-    
-    
-    //spi_xfer_done = false;
-
-    //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
-
-    //nrf_gpio_pin_set(31);
-    //nrf_delay_ms(1);
-
-    //uint8_t addr = 0x00;
-    //uint8_t buffer[2];
-
-    
-    //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, buffer, 2));
-
-
-    //while (!spi_xfer_done)
-    //{
-    //    __WFE();
-    //}
-
-    //NRF_LOG_FLUSH();
-
-
 
     while (1)
     {
-        //for (uint8_t i = 0; i <= 0xFF; i++)
-        //{   
-        //    NRF_LOG_INFO("Transfered: %d", i)
-        //    NRF_LOG_HEXDUMP_INFO(i, strlen((const char *)i));
-        //    fault_state = readRegister16(i);
+        bsp_board_led_invert(BSP_BOARD_LED_0);
+        nrf_delay_ms(50);
 
-        //    NRF_LOG_INFO("Received: %d", fault_state);
-        //    NRF_LOG_HEXDUMP_INFO(fault_state, strlen((const char *)fault_state));
-        //    nrf_delay_ms(1);
-        //    NRF_LOG_INFO("")
+
+
+
+        //autoConvert(true);
+        //nrf_delay_ms(1);
+
+        //autoConvert(false);
+        //nrf_delay_ms(1);
+  
+        //enable50Hz(false);
+        //nrf_delay_ms(1);
+
+        //enable50Hz(true);
+        //nrf_delay_ms(1);
+
+        //setWires(MAX31865_3WIRE);
+        //nrf_delay_ms(1);
+
+        //setWires(MAX31865_2WIRE);
+        //nrf_delay_ms(1);
+
+        //readRTD();
+        //nrf_delay_ms(500);
+
+
+        PT100_Temperature_new = temperature_new(PT100_R0, Rref);
+        PT100_Temperature = temperature(PT100_R0, Rref);
+        NRF_LOG_INFO("Temperature_new: " NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(PT100_Temperature_new));
+        NRF_LOG_INFO("Temperature____: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
+        NRF_LOG_FLUSH();
+
+
+    }
+        //for (int i = 0; i <= 10; i++)
+        //{
+        //        uint8_t buffer[2];
+        //        uint8_t init_b[] = {0x80, 0xC3};
+        //        uint8_t addr;
+
+        //        nrf_gpio_pin_clear(31);
+                
+        //        spi_xfer_done = false;
+    
+        //        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &init_b, 2, NULL, 0));
+
+        //        while (!spi_xfer_done)
+        //        {
+        //            __WFE();
+        //        }
+        //        nrf_gpio_pin_set(31);
+
+        //        nrf_gpio_pin_clear(31);
+
+        //        addr = 0x00;
+        //        spi_xfer_done = false;
+    
+        //        APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 2));
+
+        //        while (!spi_xfer_done)
+        //        {
+        //            __WFE();
+        //        }
+        //        nrf_gpio_pin_set(31);
         //}
 
-        //bsp_board_led_invert(BSP_BOARD_LED_0);      // change state of LED 1 
+        //nrf_delay_ms(500);
 
-        //NRF_LOG_INFO("Fault: ");
-        //fault_state = readFault();                  // read the fault of MAX31865
-        ////TODO //NRF_LOG_HEXDUMP_INFO(fault_state, 1);  // TODO fce -> itoa int to string
-        
-        //RTD = readRTD();                            // read the RTD value from MAX31865
+        //uint8_t addr = 0x01;
+        //spi_xfer_done = false;
 
-        //NRF_LOG_INFO("RTD value: %d", RTD);
-        
-        //PT100_Temperature = temperature(Rref, PT100_R0);    // read the temperature from MAX31865
-        //NRF_LOG_INFO("Temperature: " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(PT100_Temperature));
+        //nrf_gpio_pin_clear(31);
 
-        //nrf_delay_ms(1000);
-    }
+        //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, NULL, 0));
+
+        //while (!spi_xfer_done)
+        //{
+        //    __WFE();
+        //}
+
+        //addr = 0x01;
+        //spi_xfer_done = false;
+
+        //APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, NULL, 0, NULL, 2));
+
+        //while (!spi_xfer_done)
+        //{
+        //    __WFE();
+        //}
+
+        //nrf_gpio_pin_set(31);
+
+        //nrf_delay_ms(200);
+    
 }
 
 
@@ -218,15 +256,6 @@ int main(void)
 bool begin(uint8_t wires)
 {
     setWires(wires);
-
-    //uint8_t test;
-
-    //test = readRegister8(0x00);
-    //NRF_LOG_INFO("Output value: %d", test);
-
-    //test = readRegister8(0x03);
-    //NRF_LOG_INFO("Output value: %d", test);
-
     enableBias(false);
     autoConvert(false);
     clearFault();
@@ -353,6 +382,7 @@ float temperature(float RTDnominal,
 {
     float Z1, Z2, Z3, Z4, Rt, temp;
 
+    Rt = 0;
     Rt = readRTD();
     Rt /= 32768;
     Rt *= refResistor;
@@ -389,6 +419,68 @@ float temperature(float RTDnominal,
 }
 
 
+
+/**************************************************************************/
+/*!
+    @brief Read the temperature in C from the RTD through calculation of the
+    resistance. Uses
+   http://www.analog.com/media/en/technical-documentation/application-notes/AN709_0.pdf
+   technique
+    @param RTDnominal The 'nominal' resistance of the RTD sensor, usually 100
+    or 1000
+    @param refResistor The value of the matching reference resistor, usually
+    430 or 4300
+    @returns Temperature in C
+*/
+/**************************************************************************/
+float temperature_new(float RTDnominal,
+                  float refResistor) 
+{
+    float a, b, c, Rt, temp;
+
+    Rt = 0;
+    Rt = readRTD();
+    Rt = Rt / 32;
+    temp = Rt - 256;
+
+    //a = RTDnominal * RTD_B;
+    //b = RTDnominal * RTD_A;
+    //c = RTDnominal - Rt;
+
+    //temp = (- b + sqrt(b * b - 4 * a * c))/(2 * a);
+
+
+    //Z1 = -RTD_A;
+    //Z2 = RTD_A * RTD_A - (4 * RTD_B);
+    //Z3 = (4 * RTD_B) / RTDnominal;
+    //Z4 = 2 * RTD_B;
+
+    //temp = Z2 + (Z3 * Rt);
+    //temp = (sqrt(temp) + Z1) / Z4;
+
+    //if (temp >= 0)
+    //  return temp;
+
+    //// ugh.
+    //Rt /= RTDnominal;
+    //Rt *= 100; // normalize to 100 ohm
+
+    //float rpoly = Rt;
+
+    //temp = -242.02;
+    //temp += 2.2228 * rpoly;
+    //rpoly *= Rt; // square
+    //temp += 2.5859e-3 * rpoly;
+    //rpoly *= Rt; // ^3
+    //temp -= 4.8260e-6 * rpoly;
+    //rpoly *= Rt; // ^4
+    //temp -= 2.8183e-8 * rpoly;
+    //rpoly *= Rt; // ^5
+    //temp += 1.5243e-10 * rpoly;
+
+    return temp;
+}
+
 /**************************************************************************/
 /*!
     @brief Read the raw 16-bit value from the RTD_REG in one shot mode
@@ -417,57 +509,41 @@ uint16_t readRTD(void)
 }
 
 
-
 void readRegisterN( uint8_t addr, 
                     uint8_t *buffer,
                     uint8_t n)
 {
     addr &= 0x7F;                                   // make sure top bit is not set
 
-    //nrf_drv_spi_xfer_desc_t   xfer_desc;
-    //xfer_desc.p_tx_buffer = &addr;
-    //xfer_desc.tx_length   = sizeof(addr);
-    //xfer_desc.p_rx_buffer = buffer;
-    //xfer_desc.rx_length   = n;
-
     spi_xfer_done = false;
 
-    //APP_ERROR_CHECK(nrf_drv_spi_xfer(&spi, &xfer_desc, 0));     // I tried also this SPI_XFER function but withou success..
-
-    //nrf_gpio_pin_set(31);
-    //nrf_delay_ms(1);
     
     APP_ERROR_CHECK(nrf_drv_spi_transfer(&spi, &addr, 1, buffer, n));
-    
-    //nrf_delay_ms(1);
-    //nrf_gpio_pin_clear(31);
 
     while (!spi_xfer_done)
     {
         __WFE();
     }
-
-    NRF_LOG_FLUSH();
 }
 
 
 uint8_t readRegister8(uint8_t addr) 
 {
-    uint8_t ret = 0;
-    readRegisterN(addr, &ret, 1);
+    uint8_t ret[2] = {0x00, 0x00};
+    readRegisterN(addr, &ret, 2);
 
-    return ret;
+    return ret[1];
 }
 
 
 uint16_t readRegister16(uint8_t addr) 
 {
-    uint8_t buffer[2] = {0, 0};
-    readRegisterN(addr, buffer, 2);
+    uint8_t buffer[3] = {0x00, 0x00, 0x00};
+    readRegisterN(addr, buffer, 3);
 
-    uint16_t ret = buffer[0];
+    uint16_t ret = buffer[1];
     ret <<= 8;
-    ret |= buffer[1];
+    ret |= buffer[2];
 
     return ret;
 }
@@ -487,6 +563,4 @@ void writeRegister8(uint8_t addr,
     {
         __WFE();
     }
-
-    NRF_LOG_FLUSH();
 }
