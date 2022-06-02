@@ -1,0 +1,100 @@
++¦¦¦Hardware Files
+-   +¦¦¦Altium Designer files
+-   -   -   Dimensions.PCBDwf
+-   -   -   Layer_stack.PCBDwf
+-   -   -   Wireless_thermometer_Bill_of_Material.BomDoc
+-   -   -   Wireless_thermometer_BLE_module.SchDoc
+-   -   -   Wireless_thermometer_one_PCB.PcbDoc
+-   -   -   Wireless_thermometer_PCB_panel.PcbDoc
+-   -   -   Wireless_thermometer_sensors.SchDoc
+-   -   -   Wireless_thermomometer.PrjPcb
+-   -   -   Wireless_thermomometer.PrjPcbStructure
+-   -   -
+-   -   +¦¦¦History
+-   -   -       Dimensions.~(1).PCBDwf.Zip
+-   -   -       Wireless_thermometer_PCB_panel.~(1).PcbDoc.Zip
+-   -   -       Wireless_thermomometer.~(1).PrjPcb.Zip
+-   -   -
+-   -   L¦¦¦Library
+-   -           Wireless_thermometer.PcbLib
+-   -           Wireless_thermometer.SchLib
+-   -
+-   +¦¦¦Production files
+-   -   -   Wireless_thermometer.step
+-   -   -
+-   -   +¦¦¦Gerber
+-   -   -       Copy of Gerber Files-macro.APR_LIB
+-   -   -       Copy of Gerber Files.apr
+-   -   -       Copy of Gerber Files.APT
+-   -   -       Copy of Gerber Files.EXTREP
+-   -   -       Copy of Gerber Files.G1
+-   -   -       Copy of Gerber Files.G2
+-   -   -       Copy of Gerber Files.GBL
+-   -   -       Copy of Gerber Files.GBO
+-   -   -       Copy of Gerber Files.GBP
+-   -   -       Copy of Gerber Files.GBS
+-   -   -       Copy of Gerber Files.GD1
+-   -   -       Copy of Gerber Files.GG1
+-   -   -       Copy of Gerber Files.GM1
+-   -   -       Copy of Gerber Files.GPB
+-   -   -       Copy of Gerber Files.GPT
+-   -   -       Copy of Gerber Files.GTL
+-   -   -       Copy of Gerber Files.GTO
+-   -   -       Copy of Gerber Files.GTP
+-   -   -       Copy of Gerber Files.GTS
+-   -   -       Copy of Gerber Files.REP
+-   -   -       Copy of Gerber Files.RUL
+-   -   -
+-   -   L¦¦¦Pick Place
+-   -           Pick_place_wireless_thermometer_one_PCB.txt
+-   -           Pick_place_wireless_thermometer_PCB_panel.txt
+-   -
+-   L¦¦¦Schematic Layout PDF files
+-       -   Assembly.pdf
+-       -   PCB_layer_stack.pdf
+-       -   PCB_panel.pdf
+-       -   Schematic_and_PCB_layer.pdf
+-       -
+-       L¦¦¦3D render
+-               PCB_3D_Bottom.png
+-               PCB_3D_Print.png
+-               PCB_3D_TOP.png
+-               Wireless_Thermometer_3D-PDF.pdf
+-
+L¦¦¦Software files
+    +¦¦¦BLE Connect app
+    -       BLE_Connect.py
+    -       ScanDiscover.py
+    -
+    L¦¦¦Firmware
+        -   read_me_first.txt
+        -
+        L¦¦¦ble_remote_thermometer
+            -   ble_remote_thermometer.eww
+            -   main.c
+            -   our_service.c
+            -   our_service.h
+            -   README.md
+            -
+            +¦¦¦MAX31865
+            -       MAX31865.c
+            -       MAX31865.h
+            -
+            L¦¦¦pca10100
+                L¦¦¦s140
+                    +¦¦¦config
+                    -       sdk_config.h
+                    -       sdk_config_SPI.h
+                    -
+                    L¦¦¦ses
+                        -   ble_remote_thermometer.emProject
+                        -   ble_remote_thermometer.emSession
+                        -   flash_placement.xml
+                        -
+                        L¦¦¦Output
+                            +¦¦¦Debug
+                            L¦¦¦Release
+                                L¦¦¦Exe
+                                        ble_remote_thermometer.elf
+                                        ble_remote_thermometer.hex
+                                        ble_remote_thermometer.map
