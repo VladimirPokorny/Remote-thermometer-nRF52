@@ -3,3 +3,5 @@
 
 # Python virtual environments
 .venv/
+
+*.csv
