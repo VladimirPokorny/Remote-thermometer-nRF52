@@ -39,7 +39,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 /***************************************************************************************************************/
 /*  Sampling interval, enabled sensors, measuring only while connected: runtime configuration (app_config.h),  */
-/*  set over BLE (Config characteristic); defaults from CONFIG_APP_* in prj.conf / boards/<board>.conf.         */
+/*  set over BLE (Config characteristic); defaults from CONFIG_APP_* in prj.conf / emulation/emulator.conf.     */
 /*  The characteristics of the RTD sensors and the reference resistors are in the board overlay (boards/).     */
 /*  More about this work, functions and variables is written in the final Master thesis:                       */
 /*  https://www.vut.cz/studenti/zav-prace/detail/142726                                                        */

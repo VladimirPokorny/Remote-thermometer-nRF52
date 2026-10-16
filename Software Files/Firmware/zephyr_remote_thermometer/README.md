@@ -5,16 +5,18 @@ nRF Connect SDK v3.4 (Zephyr 4.4). It has the same function and keeps the BLE in
 such as [`BLE_Connect.py`](../../BLE%20Connect%20app/BLE_Connect.py) keep working. It is tuned for battery
 life, see [Power consumption](#power-consumption).
 
-It also runs without hardware in the nrf52_emulator workbench (Renode), with a model of the four MAX31865
-chips.
+It also runs without hardware in the nrf52_emulator workbench (Renode), with a model of the thermometer PCB
+(four MAX31865 chips and the channel LEDs).
 
 ## Build
 
-Requires NCS v3.4.0 in `C:\ncs` (the toolchain is found automatically).
+Requires NCS v3.4.0 in `C:\ncs` (the toolchain is found automatically). There is one board for everything,
+`nrf52833dk/nrf52833` with the PCB pins: the hardware and the emulator build share the sources, `prj.conf`
+and the board overlay, and differ only by two small files in `emulation\`.
 
 ```powershell
-.\build.ps1                     # emulator:  nRF52840 DK, open-source BLE link layer
-.\build.ps1 -Target hardware    # thermometer PCB: nRF52833, SoftDevice Controller
+.\build.ps1                     # emulator build
+.\build.ps1 -Target hardware    # thermometer PCB
 .\build.ps1 -Target client      # BLE test client for a second emulator node
 .\build.ps1 -Target dongle      # virtual BLE dongle for PC apps using Bumble (see below)
 .\build.ps1 -Config Debug       # debug configuration (combine with -Target emulator / hardware)
@@ -24,27 +26,69 @@ Requires NCS v3.4.0 in `C:\ncs` (the toolchain is found automatically).
 Output goes to `<repo>\build\<target>\`, because both the Zephyr build and Renode break on the space in
 `Software Files`. The script builds the sources through a temporary `subst` drive for the same reason.
 
+| File | Hardware | Emulator | Content |
+| --- | --- | --- | --- |
+| [`prj.conf`](prj.conf) | ✓ | ✓ | the thermometer: settings, BLE, flash storage, power management, no logging |
+| [`boards/nrf52833dk_nrf52833.overlay`](boards/nrf52833dk_nrf52833.overlay) | ✓ | ✓ | PCB pins, sensors (R0, reference resistor), LDO regulator |
+| [`emulation/emulator.conf`](emulation/emulator.conf) | | ✓ | Kconfig differences, see [Hardware vs. emulator build](#hardware-vs-emulator-build) |
+| [`emulation/emulator.overlay`](emulation/emulator.overlay) | | ✓ | devicetree differences |
+| [`config/debug.conf`](config/debug.conf) | Debug | Debug | logging, `-Og`, asserts, thread info |
+| [`config/debug_hardware.conf`](config/debug_hardware.conf) | Debug | | log over SEGGER RTT |
+| [`config/debug_emulator.conf`](config/debug_emulator.conf) | | Debug | log over UART0 (the emulator's Terminal tab) |
+
+The hardware build is what a plain `west build -b nrf52833dk/nrf52833` produces too; the emulator build adds
+`-DEXTRA_CONF_FILE=emulation/emulator.conf -DEXTRA_DTC_OVERLAY_FILE=emulation/emulator.overlay`.
+
+| Target | Board | Output |
+| --- | --- | --- |
+| `hardware` | `nrf52833dk/nrf52833` | `build\hardware\zephyr_remote_thermometer\zephyr\zephyr.hex` |
+| `emulator` | `nrf52833dk/nrf52833` | `build\emulator\zephyr_remote_thermometer\zephyr\zephyr.elf` |
+| `client` | `nrf52833dk/nrf52833` | `build\client\thermometer_client\zephyr\zephyr.elf` |
+| `dongle` | `nrf52833dk/nrf52833` | `build\dongle\hci_dongle\zephyr\zephyr.elf` |
+
 ### Release and Debug
 
 | | Release (default) | Debug (`-Config Debug`) |
 | --- | --- | --- |
-| Files | `prj.conf` + `boards\<board>.conf` | + `config\debug.conf` + `config\debug_<board>.conf` |
 | Logging | none, no UART, no boot banner | emulator: UART (Terminal tab); hardware: SEGGER RTT |
 | Code | optimized for size | `-Og`, asserts, thread info for the debugger / Tasks view |
-| DK sensor LEDs (emulator) | off | LED n while sensor n is powered |
 | Use | the battery-powered thermometer; power measurements in the emulator's Power tab | stepping, reading logs |
 
-Release is what a plain `west build` produces too. Both configurations build into the same `build\<target>`
-folder, so the emulator projects load whichever was built last (**↻ Reload project** after a rebuild). Build
-messages end with `Configuration: Release` or `Debug`. In Release the emulator's Terminal stays empty; watch the
-values with the logger or the test client instead.
+Both configurations build into the same `build\<target>` folder, so the emulator projects load whichever was
+built last (**↻ Reload project** after a rebuild). Build messages end with `Configuration: emulator, Release`
+(or `hardware`, `Debug`). In Release the emulator's Terminal stays empty; watch the values with the logger or
+the test client instead.
 
-| Target | Board | Output |
-| --- | --- | --- |
-| `emulator` | `nrf52840dk/nrf52840` | `build\emulator\zephyr_remote_thermometer\zephyr\zephyr.elf` |
-| `hardware` | `nrf52833dk/nrf52833` with the PCB pins | `build\hardware\zephyr_remote_thermometer\zephyr\zephyr.hex` |
-| `client` | `nrf52840dk/nrf52840` | `build\client\thermometer_client\zephyr\zephyr.elf` |
-| `dongle` | `nrf52840dk/nrf52840` | `build\dongle\hci_dongle\zephyr\zephyr.elf` |
+### Hardware vs. emulator build
+
+Renode only models the nRF52840. The emulator runs the nRF52833 firmware on that model: the peripherals sit at
+the same addresses, and the nRF52833's 512 KB flash and 128 KB RAM (what the linker uses) fit inside the
+nRF52840's. The emulator build therefore keeps the board, the pins and the application code of the hardware
+build, and changes only what Renode can't run:
+
+| # | What | Hardware build | Emulator build | Why | Where |
+| --- | --- | --- | --- | --- | --- |
+| 1 | BLE link layer | Nordic SoftDevice Controller (NCS default) | Zephyr's open-source link layer (`CONFIG_BT_LL_SW_SPLIT`, `zephyr,bt-hci = &bt_hci_controller`) | the SoftDevice Controller / MPSL doesn't run in Renode | `emulator.conf`, `emulator.overlay` |
+| 2 | SPI for the MAX31865 | SPIM2 (EasyDMA, `nordic,nrf-spim`) | SPI2 legacy mode (`nordic,nrf-spi`), same pins and 4 MHz | Renode models SPI2 only without EasyDMA. The legacy driver moves every byte by interrupt, so the emulator's CPU time per round is a bit higher than the hardware's | `emulator.overlay` |
+| 3 | Bonds and runtime configuration | stored in flash (settings + NVS), survive a reset | RAM only: every restart begins with the Kconfig defaults and no bonds | Renode has no NVMC (flash controller) model; flash writes would hang | `emulator.conf` |
+| 4 | Reset pin | P0.18 is nRESET (`gpio-as-nreset`, set in UICR at the first boot) | `gpio-as-nreset` removed | Renode reads UICR.PSELRESET as P0.21; the startup code would rewrite it to P0.18 and reset forever | `emulator.overlay` |
+| 5 | Debug log (Debug only) | SEGGER RTT | UART0, TX only on P0.06 (RX would be P0.08 = EN_3) | Renode has no RTT. Release has no UART in either build | `config\debug_*.conf`, `emulator.overlay` |
+| 6 | Sensors enabled by default | 1, 2 | 1, 2, 3, 4 | test convenience only: the model has four chips. Delete the two lines to measure exactly what the hardware does | `emulator.conf` |
+
+Everything else is the same in both builds: board, PCB pins, sensor parameters, LDO regulator, runtime power
+management (SPI suspended between transfers), entropy (the RNG peripheral; the nRF52833 has no CryptoCell),
+connection and advertising parameters, BLE interface, and the code.
+
+What the emulator itself does differently from the PCB (not a build setting):
+
+- The `thermo` node is the bare `nrf52840` Renode machine, without the DK's buttons and LEDs, which would sit on
+  the PCB pins (buttons on P0.12 = EN_1 and P0.24 = CS_2). The PCB is added by
+  [`max31865.repl`](emulation/max31865.repl): the four MAX31865 on SPI2 and LED1..LED4 on EN_1..EN_4. On the
+  PCB the LEDs hang on the switched channel supply, so in the emulator they light while a sensor is measured.
+- No encryption (CCM/AAR aren't modelled): pairing and encrypted links can't be tested.
+- No current measurement: the Power tab estimates from the CPU sleep state, the radio and the load-switch pins
+  (5.8 mA per powered channel, nRF52833 LDO currents).
+- The temperatures come from the model (set from the Monitor tab), not from PT100 sensors.
 
 ## Run in the emulator
 
@@ -65,8 +109,8 @@ Or open the file with **Open project** on the emulator's welcome screen. The nod
 Once a client is connected, the thermometer measures every second. With a Release build (the default) it is
 silent: watch the values with the PC logger or in the test client's Terminal, and the current in the
 thermometer's **Power** tab. With a Debug build (`.\build.ps1 -Config Debug`) its own Terminal shows
-`Sensor 1: 21.507 C` .. `Sensor 4: -20.001 C`, and in the Board tab LED1..LED4 light one after the other while
-each sensor is measured. After rebuilding the firmware, click **↻ Reload project** in the header.
+`Sensor 1: 21.507 C` .. `Sensor 4: -20.001 C`. In both, the Board tab shows the PCB's LED1..LED4 lighting one
+after the other while each sensor is measured. After rebuilding the firmware, click **↻ Reload project** in the header.
 
 Change the simulated temperatures from the Monitor tab at any time:
 
@@ -80,7 +124,8 @@ sysbus.spi2.max31865 SetFault 1 0x84      # inject fault status bits, 0 clears
 The model starts at 21.5, 85, 150 and -20 °C. Readings differ from the set value by up to about 0.03 °C,
 the MAX31865's ADC resolution.
 
-To set things up by hand instead: add a node with the ELF, then in the Monitor tab
+To set things up by hand instead: add a node with the ELF and the bare `nrf52840` board (the DK's buttons
+would sit on the PCB pins), then in the Monitor tab
 `mach set "thermo"` and `include @C:/Programming/Remote-thermometer-nRF52/Software\ Files/Firmware/zephyr_remote_thermometer/emulation/max31865.resc`
 (Renode needs the space escaped as `\ `).
 
@@ -132,8 +177,8 @@ their factory defaults, used until a client changes them (the emulator build sta
 restart, because Renode has no flash controller model).
 
 The thermometer settings are Kconfig options (defined in [`Kconfig`](Kconfig)). Set them in the
-"Thermometer settings" block at the top of [`prj.conf`](prj.conf) for all builds, or in `boards/<board>.conf`
-for one build, then rebuild:
+"Thermometer settings" block at the top of [`prj.conf`](prj.conf) for both builds, or in
+[`emulation/emulator.conf`](emulation/emulator.conf) for the emulator only, then rebuild:
 
 | Option | Default | Emulator build | Meaning |
 | --- | --- | --- | --- |
@@ -142,34 +187,28 @@ for one build, then rebuild:
 | `CONFIG_APP_SENSOR_1` .. `_4` | 1, 2 on | all on | Sensors that are powered, read and published |
 | `CONFIG_APP_ADV_FAST_TIMEOUT_S` | 30 | 30 | Advertise every 100 ms this long after boot/disconnect, 0 = never |
 | `CONFIG_APP_ADV_SLOW_INTERVAL_MS` | 1000 | 1000 | Advertising interval after that |
-| `CONFIG_APP_SENSOR_LEDS` | off | Debug only | LED n on while sensor n's load switch is on |
 
 One sensor takes about 77 ms to read (load switch, bias settling, conversion), so a round of four takes about
 310 ms. A shorter interval makes the rounds run back to back. `west build -d <build dir> -t menuconfig` shows
 the options under "Remote thermometer". The startup log prints the active values:
 `Measuring temperature started: every 1000 ms, sensors 1 2 3 4.`
 
-`CONFIG_APP_SENSOR_LEDS` is only for the emulator's Debug build: it drives the DK LEDs. On the nRF52833 DK, LED2
-is P0.14, which is EN_4 on the PCB, and the PCB's own LEDs are wired to the channel supply (see
-[Power consumption](#power-consumption)).
-
 | Other settings | Where |
 | --- | --- |
-| R0 (PT100/PT1000), reference resistor, 3-wire, SPI pins, CS and EN pins | `boards/<board>.overlay` |
+| R0 (PT100/PT1000), reference resistor, 3-wire, SPI pins, CS and EN pins | [`boards/nrf52833dk_nrf52833.overlay`](boards/nrf52833dk_nrf52833.overlay) |
 | BLE name, preferred connection parameters (`CONFIG_BT_PERIPHERAL_PREF_*`), DIS manufacturer | [`prj.conf`](prj.conf) |
 | Main regulator (LDO / DC-DC) | `boards/nrf52833dk_nrf52833.overlay`, see [Power consumption](#power-consumption) |
 
-Pin mapping:
+Pin mapping, the same in both builds (the emulator's sensor model is wired to these pins too):
 
-| Signal | PCB (nRF52833) | Emulator (nRF52840 DK) |
-| --- | --- | --- |
-| SCK / MOSI / MISO | P0.26 / P0.29 / P0.30 | P1.15 / P1.13 / P1.14 |
-| CS_1..CS_4 | P0.23, P0.24, P0.17, P0.31 | P1.12, P1.11, P1.10, P1.08 |
-| EN_1..EN_4 (load switches) | P0.12, P0.03, P0.08, P0.14 | P1.07, P1.06, P1.05, P1.04 |
+| Signal | PCB (nRF52833) |
+| --- | --- |
+| SCK / MOSI / MISO | P0.26 / P0.29 / P0.30 |
+| CS_1..CS_4 | P0.23, P0.24, P0.17, P0.31 |
+| EN_1..EN_4 (load switches) | P0.12, P0.03, P0.08, P0.14 |
 
-On the DK the PCB pins collide with buttons, QSPI flash and the UART, so the emulator build uses the Arduino
-header pins. The hardware build disables the DK peripherals on the PCB pins (UART0, I2C0, SPI1, SPI3). It logs
-nothing in Release; the Debug configuration logs over RTT, like the original firmware.
+The overlay disables the nRF52833 DK peripherals on the PCB pins (UART0, I2C0, SPI1, Arduino SPI). Neither
+build logs in Release; the Debug configuration logs over RTT on hardware, like the original firmware.
 
 ## BLE interface
 
@@ -214,8 +253,8 @@ radio events. In order of impact:
    rounds: 10 s instead of 1 s cuts it tenfold.
 2. **Status LEDs.** LED1..LED4 on the PCB hang on the switched channel supply (330 Ω, about 4 mA each while the
    channel is on), more than the MAX31865 and the RTD together. Firmware can't switch them off: they light
-   whenever their channel is powered. Open solder bridges SB1..SB4 on battery-powered units. (The emulator's
-   DK LEDs are firmware-driven and only on in the Debug build.)
+   whenever their channel is powered. Open solder bridges SB1..SB4 on battery-powered units. (The emulator
+   models them the same way, on EN_1..EN_4.)
 3. **Enabled sensors** (`CONFIG_APP_SENSOR_n`): disabled channels are never powered.
 4. **No client, no measurement** (`CONFIG_APP_MEASURE_ONLY_CONNECTED`): while nobody is connected the
    thermometer only advertises.
@@ -235,8 +274,8 @@ What the firmware does:
 - **Channels** are powered only while measured. Each MAX31865 is configured and converted with 3 SPI transfers
   right after power-up: write configuration with bias on, start a one-shot conversion, read the result. The
   load switch then cuts the bias together with the chip.
-- **No logging and no UART** in the Release configuration (both builds); in the hardware build SPIM is also
-  suspended between transfers (runtime PM).
+- **No logging and no UART** in the Release configuration (both builds), and SPI is suspended between
+  transfers (runtime PM).
 
 Measured in Renode (thermometer + test client, 4 sensors, 1 s interval, 20 s window; Renode can't measure
 current, so radio packets and executed CPU instructions stand in for radio and CPU on-time):
@@ -246,7 +285,7 @@ current, so radio packets and executed CPU instructions stand in for radio and C
 | Before (4 notifications/round, 100–200 ms interval) | 140 | 3.86 M |
 | After | 40 (−71 %) | 2.41 M (−37 %) |
 
-The emulator build still logs to its UART, so the hardware build's CPU time is lower still.
+These were measured with an earlier emulator build that still logged to its UART.
 
 **DC/DC regulator.** The hardware build uses the LDO, like the nRF5 SDK firmware: the nRF52833 DK board file
 would switch on the DC/DC converter, which needs an inductor at the DCC pin, and the PCB has none. If the
@@ -264,7 +303,7 @@ BL653 module integrates it (check its datasheet), set `regulator-initial-mode = 
 - **No System OFF after 60 s of advertising.** The device advertises until a client connects and resumes
   advertising after a disconnect. There are no BSP buttons either: no wake-up button, bond erase or whitelist.
 - **LEDs.** The original's BSP indications (LED1 advertising/connected, LED4 toggling every round) are gone.
-  With `CONFIG_APP_SENSOR_LEDS`, LED n shows sensor n's load switch instead.
+  Only the PCB's channel LEDs remain, lit by the load switches.
 - **Chips are configured after every power-up.** The load switch powers the whole channel, so a MAX31865
   loses its configuration between measurements. The original configured all four chips once at boot, while
   they were unpowered. That only worked because 4-wire with the 60 Hz filter is the chip's reset state; a
@@ -276,8 +315,8 @@ BL653 module integrates it (check its datasheet), set `regulator-initial-mode = 
 
 ## Emulator limitations
 
-- Only the open-source link layer (`CONFIG_BT_LL_SW_SPLIT`) runs in Renode. The hardware build uses Nordic's
-  SoftDevice Controller.
+See [Hardware vs. emulator build](#hardware-vs-emulator-build) for everything the emulator build changes.
+
 - Renode doesn't model the CCM/AAR encryption peripherals, so pairing and encrypted links can't be tested
   there. The characteristics don't require encryption, and the test client doesn't pair.
 - AAR warnings and `Unhandled short DisabledRSSIStop` in the Renode log are expected.

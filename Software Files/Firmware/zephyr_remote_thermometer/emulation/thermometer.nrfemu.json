@@ -60,6 +60,7 @@
   "power": {
     "battery": {
       "preset": "ls14250"
-    }
+    },
+    "profile": "nrf52833"
   }
 }
