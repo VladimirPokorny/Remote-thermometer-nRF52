@@ -1,0 +1,5 @@
+:name: MAX31865 sensors
+:description: Adds the thermometer's four MAX31865 RTD converters to the current nRF52840 DK machine.
+
+include $ORIGIN/MAX31865Array.cs
+machine LoadPlatformDescription $ORIGIN/max31865.repl

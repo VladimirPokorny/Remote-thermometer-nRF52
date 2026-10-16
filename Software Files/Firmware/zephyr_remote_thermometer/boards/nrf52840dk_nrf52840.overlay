@@ -1,0 +1,114 @@
+/*
+ * nRF52840 DK - the emulator target (Renode, nrf52_emulator).
+ *
+ * - Open-source Zephyr link layer (BT_LL_SW_SPLIT) and the RNG peripheral as entropy
+ *   source. Both are required for the firmware to run in Renode.
+ * - The MAX31865 bus is SPI2 in legacy (non-EasyDMA) mode, the only SPI instance Renode
+ *   models on the nRF52840 (sysbus.spi2).
+ * - The thermometer PCB pins (P0.03/08/12/14/17/23/24/26/29/30/31) collide with the DK's
+ *   buttons, QSPI flash and UART, so everything is moved to the free Arduino header pins
+ *   on port 1:
+ *
+ *     signal  PCB    DK     Arduino      signal  PCB    DK     Arduino
+ *     SCK     P0.26  P1.15  D13          EN_1    P0.12  P1.07  D6
+ *     MOSI    P0.29  P1.13  D11          EN_2    P0.03  P1.06  D5
+ *     MISO    P0.30  P1.14  D12          EN_3    P0.08  P1.05  D4
+ *     CS_1    P0.23  P1.12  D10          EN_4    P0.14  P1.04  D3
+ *     CS_2    P0.24  P1.11  D9
+ *     CS_3    P0.17  P1.10  D8
+ *     CS_4    P0.31  P1.08  D7
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/ {
+	chosen {
+		zephyr,bt-hci = &bt_hci_controller;
+		zephyr,entropy = &rng;
+	};
+
+	zephyr,user {
+		/* Load switches powering the RTD channels, in sensor order */
+		rtd-enable-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>,
+				   <&gpio1 6 GPIO_ACTIVE_HIGH>,
+				   <&gpio1 5 GPIO_ACTIVE_HIGH>,
+				   <&gpio1 4 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&bt_hci_sdc {
+	status = "disabled";
+};
+
+&bt_hci_controller {
+	status = "okay";
+};
+
+/* Uses the same Arduino SPI pins */
+&arduino_spi {
+	status = "disabled";
+};
+
+&pinctrl {
+	spi2_rtd_default: spi2_rtd_default {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,
+				<NRF_PSEL(SPIM_MOSI, 1, 13)>,
+				<NRF_PSEL(SPIM_MISO, 1, 14)>;
+		};
+	};
+
+	spi2_rtd_sleep: spi2_rtd_sleep {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,
+				<NRF_PSEL(SPIM_MOSI, 1, 13)>,
+				<NRF_PSEL(SPIM_MISO, 1, 14)>;
+			low-power-enable;
+		};
+	};
+};
+
+&spi2 {
+	compatible = "nordic,nrf-spi";
+	status = "okay";
+	pinctrl-0 = <&spi2_rtd_default>;
+	pinctrl-1 = <&spi2_rtd_sleep>;
+	pinctrl-names = "default", "sleep";
+	cs-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>,
+		   <&gpio1 11 GPIO_ACTIVE_LOW>,
+		   <&gpio1 10 GPIO_ACTIVE_LOW>,
+		   <&gpio1 8 GPIO_ACTIVE_LOW>;
+
+	/* PT100 sensors, 430 ohm reference resistors, 4-wire connection */
+	rtd1: max31865@0 {
+		compatible = "maxim,max31865";
+		reg = <0>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+
+	rtd2: max31865@1 {
+		compatible = "maxim,max31865";
+		reg = <1>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+
+	rtd3: max31865@2 {
+		compatible = "maxim,max31865";
+		reg = <2>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+
+	rtd4: max31865@3 {
+		compatible = "maxim,max31865";
+		reg = <3>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+};

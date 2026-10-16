@@ -1,0 +1,17 @@
+// Four MAX31865 RTD converters on the nRF52840 DK's SPI2, wired like boards/nrf52840dk_nrf52840.overlay.
+// Loaded on top of an nrf52840dk machine by max31865.resc, which compiles MAX31865Array.cs first.
+
+max31865: SPI.MAX31865Array @ spi2
+    rtdNominal: 100
+    refResistor: 430
+
+// CS_1..CS_4 -> inputs 0..3, EN_1..EN_4 -> inputs 4..7
+gpio1:
+    12 -> max31865@0
+    11 -> max31865@1
+    10 -> max31865@2
+    8 -> max31865@3
+    7 -> max31865@4
+    6 -> max31865@5
+    5 -> max31865@6
+    4 -> max31865@7

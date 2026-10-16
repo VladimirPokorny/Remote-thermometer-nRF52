@@ -1,0 +1,56 @@
+{
+  "name": "Remote thermometer + test client",
+  "ble": true,
+  "run": true,
+  "nodes": [
+    {
+      "name": "thermo",
+      "elf": "../../../../build/emulator/zephyr_remote_thermometer/zephyr/zephyr.elf",
+      "scripts": [
+        "max31865.resc"
+      ],
+      "build": ".\\build.ps1",
+      "power": {
+        "note": "Estimate inputs. Currents: nRF52833 PS typical (LDO). Sensor channel (PT100, 430 ohm reference) = MAX31865 IDD 2.0 mA + bias 2.0 V / (430 + 100 ohm) = 3.8 mA -> 5.8 mA while its load switch is on. Bus buffer and status LED behind the load switch are not included.",
+        "profile": "nrf52833",
+        "regulator": "ldo",
+        "vdd": 3.6,
+        "battery": {
+          "name": "1/2 AA Li-SOCl2 3.6 V (e.g. Saft LS14250)",
+          "capacityMah": 1200
+        },
+        "loads": [
+          {
+            "name": "Sensor 1 (EN_1)",
+            "pin": "P1.07",
+            "activeHigh": true,
+            "mA": 5.8
+          },
+          {
+            "name": "Sensor 2 (EN_2)",
+            "pin": "P1.06",
+            "activeHigh": true,
+            "mA": 5.8
+          },
+          {
+            "name": "Sensor 3 (EN_3)",
+            "pin": "P1.05",
+            "activeHigh": true,
+            "mA": 5.8
+          },
+          {
+            "name": "Sensor 4 (EN_4)",
+            "pin": "P1.04",
+            "activeHigh": true,
+            "mA": 5.8
+          }
+        ]
+      }
+    },
+    {
+      "name": "client",
+      "elf": "../../../../build/client/thermometer_client/zephyr/zephyr.elf",
+      "build": ".\\build.ps1 -Target client"
+    }
+  ]
+}

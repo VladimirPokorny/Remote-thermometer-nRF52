@@ -1,0 +1,15 @@
+/* Open-source Zephyr link layer and RNG entropy, as for the thermometer: both required in Renode */
+/ {
+	chosen {
+		zephyr,bt-hci = &bt_hci_controller;
+		zephyr,entropy = &rng;
+	};
+};
+
+&bt_hci_sdc {
+	status = "disabled";
+};
+
+&bt_hci_controller {
+	status = "okay";
+};

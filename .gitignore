@@ -1,0 +1,5 @@
+# Zephyr build output (Software Files/Firmware/zephyr_remote_thermometer/build.ps1)
+/build/
+
+# Python virtual environments
+.venv/

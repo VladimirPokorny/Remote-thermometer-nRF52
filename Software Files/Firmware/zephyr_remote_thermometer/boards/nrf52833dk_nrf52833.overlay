@@ -1,0 +1,121 @@
+/*
+ * nRF52833 - the real thermometer. Same pins as the nRF5 SDK firmware
+ * (MAX31865.h, spi_init()) and the PCB:
+ *
+ *   SCK  P0.26    CS_1 P0.23    EN_1 P0.12
+ *   MOSI P0.29    CS_2 P0.24    EN_2 P0.03
+ *   MISO P0.30    CS_3 P0.17    EN_3 P0.08
+ *                 CS_4 P0.31    EN_4 P0.14
+ *
+ * The DK peripherals that use those pins are disabled.
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+#include <zephyr/dt-bindings/regulator/nrf5x.h>
+
+/*
+ * Main regulator: LDO, as in the nRF5 SDK firmware (NRFX_POWER_CONFIG_DEFAULT_DCDCEN 0). The DK board
+ * file selects DC/DC, which needs an inductor on DCC; the PCB has none, so DC/DC only works if the
+ * BL653 module contains it. Check the BL653 datasheet; if it does, DC/DC cuts the radio and CPU
+ * current by roughly a third:
+ *     regulator-initial-mode = <NRF5X_REG_MODE_DCDC>;
+ */
+&reg1 {
+	regulator-initial-mode = <NRF5X_REG_MODE_LDO>;
+};
+
+/ {
+	zephyr,user {
+		/* Load switches powering the RTD channels, in sensor order */
+		rtd-enable-gpios = <&gpio0 12 GPIO_ACTIVE_HIGH>,
+				   <&gpio0 3 GPIO_ACTIVE_HIGH>,
+				   <&gpio0 8 GPIO_ACTIVE_HIGH>,
+				   <&gpio0 14 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+/* P0.08 (RX) */
+&uart0 {
+	status = "disabled";
+};
+
+/* P0.26 (SDA) */
+&i2c0 {
+	status = "disabled";
+};
+
+/* P0.30, P0.31 */
+&spi1 {
+	status = "disabled";
+};
+
+/* P0.23 */
+&arduino_spi {
+	status = "disabled";
+};
+
+&pinctrl {
+	spi2_rtd_default: spi2_rtd_default {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 0, 26)>,
+				<NRF_PSEL(SPIM_MOSI, 0, 29)>,
+				<NRF_PSEL(SPIM_MISO, 0, 30)>;
+		};
+	};
+
+	spi2_rtd_sleep: spi2_rtd_sleep {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 0, 26)>,
+				<NRF_PSEL(SPIM_MOSI, 0, 29)>,
+				<NRF_PSEL(SPIM_MISO, 0, 30)>;
+			low-power-enable;
+		};
+	};
+};
+
+&spi2 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	/* SPIM is suspended (and its pins put in the sleep state) between transfers */
+	zephyr,pm-device-runtime-auto;
+	pinctrl-0 = <&spi2_rtd_default>;
+	pinctrl-1 = <&spi2_rtd_sleep>;
+	pinctrl-names = "default", "sleep";
+	cs-gpios = <&gpio0 23 GPIO_ACTIVE_LOW>,
+		   <&gpio0 24 GPIO_ACTIVE_LOW>,
+		   <&gpio0 17 GPIO_ACTIVE_LOW>,
+		   <&gpio0 31 GPIO_ACTIVE_LOW>;
+
+	/* PT100 sensors, 430 ohm reference resistors, 4-wire connection */
+	rtd1: max31865@0 {
+		compatible = "maxim,max31865";
+		reg = <0>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+
+	rtd2: max31865@1 {
+		compatible = "maxim,max31865";
+		reg = <1>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+
+	rtd3: max31865@2 {
+		compatible = "maxim,max31865";
+		reg = <2>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+
+	rtd4: max31865@3 {
+		compatible = "maxim,max31865";
+		reg = <3>;
+		spi-max-frequency = <4000000>;
+		resistance-at-zero = <100>;
+		resistance-reference = <430>;
+	};
+};

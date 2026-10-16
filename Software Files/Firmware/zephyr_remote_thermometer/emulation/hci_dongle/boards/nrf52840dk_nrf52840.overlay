@@ -1,0 +1,19 @@
+/*
+ * Open-source Zephyr link layer and RNG entropy: both required in Renode.
+ * HCI goes over uart0 (the DK's zephyr,bt-c2h-uart). No hardware flow control: the emulated
+ * UART is a TCP socket.
+ */
+/ {
+	chosen {
+		zephyr,bt-hci = &bt_hci_controller;
+		zephyr,entropy = &rng;
+	};
+};
+
+&bt_hci_sdc {
+	status = "disabled";
+};
+
+&bt_hci_controller {
+	status = "okay";
+};

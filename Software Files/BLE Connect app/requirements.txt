@@ -1,0 +1,4 @@
+# BLE_Connect.py, ScanDiscover.py: the PC's Bluetooth adapter
+bleak
+# BLE_Connect_bumble.py: any HCI controller, e.g. the emulator's virtual dongle
+bumble>=0.0.236

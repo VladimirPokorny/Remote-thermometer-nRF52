@@ -1,0 +1,64 @@
+# Remote thermometer application settings.
+# Set them in prj.conf (all boards) or boards/<board>.conf (one board), or interactively with
+#   west build -d <build dir> -t menuconfig
+
+menu "Remote thermometer"
+
+config APP_SAMPLING_INTERVAL_MS
+	int "Temperature sampling interval [ms]"
+	default 1000
+	range 100 3600000
+	help
+	  Time between the starts of two measurement rounds. Every round reads all enabled sensors and
+	  publishes the values over BLE. One sensor takes about 77 ms (2 ms load switch settling,
+	  10 ms bias settling, 65 ms conversion), so with N sensors a round takes about N * 77 ms. If the
+	  interval is shorter than that, rounds run back to back.
+
+config APP_MEASURE_ONLY_CONNECTED
+	bool "Measure only while a client is connected"
+	default y
+	help
+	  Without a connected client nobody receives the values, so the sensor channels stay unpowered
+	  and the thermometer only advertises. A connecting client gets the first round at once.
+	  Disable to keep measuring (and updating the readable values) all the time.
+
+config APP_SENSOR_1
+	bool "Sensor 1"
+	default y
+
+config APP_SENSOR_2
+	bool "Sensor 2"
+	default y
+
+config APP_SENSOR_3
+	bool "Sensor 3"
+
+config APP_SENSOR_4
+	bool "Sensor 4"
+	help
+	  Disabled sensors are not powered or read; their BLE characteristic keeps DE AD BE EF.
+
+config APP_ADV_FAST_TIMEOUT_S
+	int "Fast advertising time [s]"
+	default 30
+	range 0 3600
+	help
+	  After boot and after a disconnect, advertise every 100 ms for this long so a client finds the
+	  thermometer quickly, then switch to slow advertising (APP_ADV_SLOW_INTERVAL_MS) to save power.
+	  0: always advertise slowly.
+
+config APP_ADV_SLOW_INTERVAL_MS
+	int "Slow advertising interval [ms]"
+	default 1000
+	range 100 10240
+
+config APP_SENSOR_LEDS
+	bool "Show the sensor load switches on the board LEDs"
+	help
+	  LED n is on while the load switch of sensor n (EN_n) is on, i.e. while that sensor is being
+	  measured. Uses the led0..led3 devicetree aliases. Only for boards whose LEDs don't share pins
+	  with the thermometer: on the nRF52833 DK, LED2 is P0.14 = EN_4 of the PCB.
+
+endmenu
+
+source "Kconfig.zephyr"
