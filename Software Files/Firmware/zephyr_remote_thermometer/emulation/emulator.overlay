@@ -1,0 +1,57 @@
+/*
+ * Emulator build (Renode in nrf52_emulator), on top of boards/nrf52833dk_nrf52833.overlay.
+ * Same PCB pins as the hardware build; only what Renode can't run differs. Kconfig part:
+ * emulator.conf.
+ */
+
+/ {
+	chosen {
+		zephyr,bt-hci = &bt_hci_controller;
+	};
+};
+
+/* Open-source Zephyr link layer instead of the SoftDevice Controller (CONFIG_BT_LL_SW_SPLIT) */
+&bt_hci_sdc {
+	status = "disabled";
+};
+
+&bt_hci_controller {
+	status = "okay";
+};
+
+/* Renode models SPI2 only as the legacy SPI master (no EasyDMA), the hardware build uses SPIM2. Same
+ * registers base, pins and frequency. */
+&spi2 {
+	compatible = "nordic,nrf-spi";
+};
+
+/* Renode reads UICR.PSELRESET as P0.21 (nRF52840 DK). With gpio-as-nreset the nRF52833 startup code
+ * would "correct" it to P0.18 and reset, forever. */
+&uicr {
+	/delete-property/ gpio-as-nreset;
+};
+
+/* Debug log on UART0 (the emulator's Terminal tab, config/debug_emulator.conf): TX only on P0.06, no
+ * RX, because the DK's RX pin P0.08 is EN_3. Release builds don't include the UART driver. */
+&pinctrl {
+	uart0_tx_default: uart0_tx_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 6)>;
+		};
+	};
+
+	uart0_tx_sleep: uart0_tx_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 6)>;
+			low-power-enable;
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+	disable-rx;
+	pinctrl-0 = <&uart0_tx_default>;
+	pinctrl-1 = <&uart0_tx_sleep>;
+	pinctrl-names = "default", "sleep";
+};

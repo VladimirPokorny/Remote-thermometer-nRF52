@@ -1,0 +1,23 @@
+/*
+ * Emulator only. HCI goes over uart0 (the DK's zephyr,bt-c2h-uart). No hardware flow control: the
+ * emulated UART is a TCP socket.
+ */
+/ {
+	chosen {
+		zephyr,bt-hci = &bt_hci_controller;
+	};
+};
+
+/* Open-source Zephyr link layer: Nordic's SoftDevice Controller doesn't run in Renode */
+&bt_hci_sdc {
+	status = "disabled";
+};
+
+&bt_hci_controller {
+	status = "okay";
+};
+
+/* Renode reads UICR.PSELRESET as P0.21: don't let the startup code "correct" it to P0.18 and reset */
+&uicr {
+	/delete-property/ gpio-as-nreset;
+};

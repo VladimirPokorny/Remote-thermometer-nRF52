@@ -5,6 +5,7 @@
   "nodes": [
     {
       "name": "thermo",
+      "board": "nrf52840",
       "elf": "../../../../build/emulator/zephyr_remote_thermometer/zephyr/zephyr.elf",
       "scripts": [
         "max31865.resc"
@@ -22,25 +23,25 @@
         "loads": [
           {
             "name": "Sensor 1 (EN_1)",
-            "pin": "P1.07",
+            "pin": "P0.12",
             "activeHigh": true,
             "mA": 5.8
           },
           {
             "name": "Sensor 2 (EN_2)",
-            "pin": "P1.06",
+            "pin": "P0.03",
             "activeHigh": true,
             "mA": 5.8
           },
           {
             "name": "Sensor 3 (EN_3)",
-            "pin": "P1.05",
+            "pin": "P0.08",
             "activeHigh": true,
             "mA": 5.8
           },
           {
             "name": "Sensor 4 (EN_4)",
-            "pin": "P1.04",
+            "pin": "P0.14",
             "activeHigh": true,
             "mA": 5.8
           }

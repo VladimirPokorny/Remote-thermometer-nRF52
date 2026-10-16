@@ -1,5 +1,5 @@
 # Remote thermometer application settings.
-# Set them in prj.conf (all boards) or boards/<board>.conf (one board), or interactively with
+# Set them in prj.conf (both builds) or emulation/emulator.conf (emulator only), or interactively with
 #   west build -d <build dir> -t menuconfig
 # APP_SAMPLING_INTERVAL_MS, APP_MEASURE_ONLY_CONNECTED and APP_SENSOR_n are the factory defaults of the
 # runtime configuration: a BLE client can change them (Config characteristic, thermometer.py config),
@@ -54,13 +54,6 @@ config APP_ADV_SLOW_INTERVAL_MS
 	int "Slow advertising interval [ms]"
 	default 1000
 	range 100 10240
-
-config APP_SENSOR_LEDS
-	bool "Show the sensor load switches on the board LEDs"
-	help
-	  LED n is on while the load switch of sensor n (EN_n) is on, i.e. while that sensor is being
-	  measured. Uses the led0..led3 devicetree aliases. Only for boards whose LEDs don't share pins
-	  with the thermometer: on the nRF52833 DK, LED2 is P0.14 = EN_4 of the PCB.
 
 endmenu
 

@@ -1,17 +1,24 @@
-// Four MAX31865 RTD converters on the nRF52840 DK's SPI2, wired like boards/nrf52840dk_nrf52840.overlay.
-// Loaded on top of an nrf52840dk machine by max31865.resc, which compiles MAX31865Array.cs first.
+// The thermometer PCB around the nRF52: four MAX31865 RTD converters on SPI2 and the channel status
+// LEDs, on the PCB pins (boards/nrf52833dk_nrf52833.overlay). Loaded on top of the bare nrf52840
+// machine by max31865.resc, which compiles MAX31865Array.cs first.
 
 max31865: SPI.MAX31865Array @ spi2
     rtdNominal: 100
     refResistor: 430
 
-// CS_1..CS_4 -> inputs 0..3, EN_1..EN_4 -> inputs 4..7
-gpio1:
-    12 -> max31865@0
-    11 -> max31865@1
-    10 -> max31865@2
-    8 -> max31865@3
-    7 -> max31865@4
-    6 -> max31865@5
-    5 -> max31865@6
-    4 -> max31865@7
+// LED1..LED4 hang on the switched channel supply: on while the channel's load switch is on
+led1: Miscellaneous.LED @ gpio0 12
+led2: Miscellaneous.LED @ gpio0 3
+led3: Miscellaneous.LED @ gpio0 8
+led4: Miscellaneous.LED @ gpio0 14
+
+// CS_1..CS_4 -> inputs 0..3, EN_1..EN_4 -> inputs 4..7 and the LEDs
+gpio0:
+    23 -> max31865@0
+    24 -> max31865@1
+    17 -> max31865@2
+    31 -> max31865@3
+    12 -> max31865@4 | led1@0
+    3 -> max31865@5 | led2@0
+    8 -> max31865@6 | led3@0
+    14 -> max31865@7 | led4@0

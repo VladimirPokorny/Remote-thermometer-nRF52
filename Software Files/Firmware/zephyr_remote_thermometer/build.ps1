@@ -1,16 +1,18 @@
-# Build the remote thermometer with the installed nRF Connect SDK.
-#   .\build.ps1                     # emulator: nRF52840 DK, open-source link layer
-#   .\build.ps1 -Target hardware    # thermometer PCB: nRF52833, SoftDevice Controller
+# Build the remote thermometer with the installed nRF Connect SDK. Every target is built for one board,
+# nrf52833dk/nrf52833 (the thermometer PCB's nRF52833); the emulator runs the nRF52833 firmware on its
+# nRF52840 model.
+#   .\build.ps1                     # emulator: prj.conf + emulation\emulator.conf / emulator.overlay
+#   .\build.ps1 -Target hardware    # thermometer PCB: prj.conf only
 #   .\build.ps1 -Target client      # test client for a second emulator node (emulation\thermometer_client)
 #   .\build.ps1 -Target dongle      # virtual BLE dongle (HCI over uart0) for Bumble apps on the PC (emulation\hci_dongle)
 #   .\build.ps1 -Config Debug       # debug configuration: logging (UART in the emulator, RTT on hardware),
-#                                   # debug info, sensor LEDs on the DK. Default: -Config Release
+#                                   # debug info. Default: -Config Release
 #   .\build.ps1 -Pristine           # clean rebuild
 #
-# Release is the plain configuration (prj.conf + boards\<board>.conf): no logging, no UART, optimized,
-# what goes on the battery-powered thermometer and what the emulator's Power tab should measure.
-# Debug adds config\debug.conf and config\debug_<board>.conf on top. -Config applies to the thermometer
-# (emulator, hardware); the client and dongle helpers have a single configuration.
+# Release is the plain configuration: no logging, no UART, optimized, what goes on the battery-powered
+# thermometer and what the emulator's Power tab should measure. Debug adds config\debug.conf and
+# config\debug_<target>.conf on top. -Config applies to the thermometer (emulator, hardware); the client
+# and dongle helpers have a single configuration.
 #
 # Output goes to <repo>\build\<target>, outside "Software Files": the Zephyr build and Renode's monitor
 # both break on spaces in paths, so the ELF must live on a path without them.
@@ -25,8 +27,7 @@ $ErrorActionPreference = "Stop"
 $here = $PSScriptRoot
 $repo = (Resolve-Path (Join-Path $here "..\..\..")).Path
 
-$board = @{ emulator = "nrf52840dk/nrf52840"; hardware = "nrf52833dk/nrf52833"; client = "nrf52840dk/nrf52840"
-           dongle = "nrf52840dk/nrf52840" }[$Target]
+$board = "nrf52833dk/nrf52833"
 $appRel = @{ emulator = ""; hardware = ""; client = "emulation\thermometer_client"; dongle = "emulation\hci_dongle" }[$Target]
 $buildDir = Join-Path $repo "build\$Target"
 if ($buildDir -match " ") { throw "Build directory '$buildDir' contains spaces" }
@@ -48,15 +49,20 @@ $src = if ($appRel) { Join-Path $root $appRel } else { $root }
 
 $westArgs = @("build", "-b", $board, "-d", $buildDir, $src)
 if ($Pristine) { $westArgs += @("-p", "always") }
-# Debug: config fragments on top of the release configuration. Always passed (empty for Release) so a
-# cached debug setting from an earlier build doesn't stick.
-$debugBoard = @{ emulator = "nrf52840dk"; hardware = "nrf52833dk" }[$Target]
-$extraConf = ""
-if ($Config -eq "Debug" -and $debugBoard) {
-    $extraConf = (@("config\debug.conf", "config\debug_$debugBoard.conf") |
-        ForEach-Object { (Join-Path $root $_).Replace("\", "/") }) -join ";"
+# Configuration fragments on top of prj.conf: the emulator differences (emulation\emulator.*) and the
+# debug configuration. Always passed (empty if none) so a cached setting from an earlier build doesn't stick.
+$isThermometer = $Target -in @("emulator", "hardware")
+$extraConf = @()
+$extraDts = @()
+if ($Target -eq "emulator") {
+    $extraConf += "emulation\emulator.conf"
+    $extraDts += "emulation\emulator.overlay"
 }
-$westArgs += @("--", "-DEXTRA_CONF_FILE=$extraConf")
+if ($Config -eq "Debug" -and $isThermometer) {
+    $extraConf += @("config\debug.conf", "config\debug_$Target.conf")
+}
+$toCmake = { param($files) ($files | ForEach-Object { (Join-Path $root $_).Replace("\", "/") }) -join ";" }
+$westArgs += @("--", "-DEXTRA_CONF_FILE=$(& $toCmake $extraConf)", "-DEXTRA_DTC_OVERLAY_FILE=$(& $toCmake $extraDts)")
 
 if (-not $Toolchain) {
     $Toolchain = (Get-ChildItem "C:\ncs\toolchains" -Directory | Where-Object { Test-Path (Join-Path $_.FullName "environment.json") } |
@@ -91,6 +97,6 @@ finally {
 }
 
 $app = Split-Path $src -Leaf
-if ($debugBoard) { Write-Host "Configuration: $Config" }
+if ($isThermometer) { Write-Host "Configuration: $Target, $Config" }
 Write-Host "ELF: $(Join-Path $buildDir "$app\zephyr\zephyr.elf")"
 if ($Target -eq "hardware") { Write-Host "HEX: $(Join-Path $buildDir "$app\zephyr\zephyr.hex")" }

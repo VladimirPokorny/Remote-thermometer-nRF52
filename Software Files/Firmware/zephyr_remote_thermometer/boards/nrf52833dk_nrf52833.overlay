@@ -1,5 +1,6 @@
 /*
- * nRF52833 - the real thermometer. Same pins as the nRF5 SDK firmware
+ * nRF52833 - the thermometer PCB, used by both builds (hardware and emulator; the emulator's few
+ * changes are in emulation/emulator.overlay). Same pins as the nRF5 SDK firmware
  * (MAX31865.h, spi_init()) and the PCB:
  *
  *   SCK  P0.26    CS_1 P0.23    EN_1 P0.12

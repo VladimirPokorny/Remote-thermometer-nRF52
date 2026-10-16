@@ -50,29 +50,23 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #define SENSOR_COUNT        TEMP_SERVICE_SENSOR_COUNT
 #define ZEPHYR_USER         DT_PATH(zephyr_user)
 
-/* One measuring channel: MAX31865 chip, the load switch powering it and its indicator LED */
+/* One measuring channel: MAX31865 chip and the load switch powering it (and the channel's status LED) */
 struct rtd_channel {
 	struct max31865 max;
 	struct gpio_dt_spec enable;
-	struct gpio_dt_spec led;        /* .port NULL: no LED */
 };
 
-/* LED n mirrors the load switch of sensor n (CONFIG_APP_SENSOR_LEDS) */
-#define SENSOR_LED(alias)                                                                        \
-	COND_CODE_1(CONFIG_APP_SENSOR_LEDS, (GPIO_DT_SPEC_GET_OR(DT_ALIAS(alias), gpios, {0})), ({0}))
-
-#define RTD_CHANNEL(label, idx, led_alias)                                                       \
+#define RTD_CHANNEL(label, idx)                                                                  \
 	{                                                                                        \
 		.max = MAX31865_DT_SPEC_GET(DT_NODELABEL(label)),                                \
 		.enable = GPIO_DT_SPEC_GET_BY_IDX(ZEPHYR_USER, rtd_enable_gpios, idx),           \
-		.led = SENSOR_LED(led_alias),                                                    \
 	}
 
 static const struct rtd_channel channels[SENSOR_COUNT] = {
-	RTD_CHANNEL(rtd1, 0, led0),
-	RTD_CHANNEL(rtd2, 1, led1),
-	RTD_CHANNEL(rtd3, 2, led2),
-	RTD_CHANNEL(rtd4, 3, led3),
+	RTD_CHANNEL(rtd1, 0),
+	RTD_CHANNEL(rtd2, 1),
+	RTD_CHANNEL(rtd3, 2),
+	RTD_CHANNEL(rtd4, 3),
 };
 
 static const struct bt_data ad[] = {
@@ -197,24 +191,18 @@ static int gpio_init(void)
 	for (int i = 0; i < SENSOR_COUNT && !err; i++) {
 		const struct rtd_channel *ch = &channels[i];
 
-		if (!gpio_is_ready_dt(&ch->enable) || (ch->led.port && !gpio_is_ready_dt(&ch->led))) {
+		if (!gpio_is_ready_dt(&ch->enable)) {
 			return -ENODEV;
 		}
 		err = gpio_pin_configure_dt(&ch->enable, GPIO_OUTPUT_INACTIVE);
-		if (!err && ch->led.port) {
-			err = gpio_pin_configure_dt(&ch->led, GPIO_OUTPUT_INACTIVE);
-		}
 	}
 	return err;
 }
 
-/* Load switch of the channel and its LED */
+/* Load switch of the channel */
 static void channel_power(const struct rtd_channel *ch, int on)
 {
 	gpio_pin_set_dt(&ch->enable, on);
-	if (ch->led.port) {
-		gpio_pin_set_dt(&ch->led, on);
-	}
 }
 
 /* Power the channel, read the temperature, power it down again. The load switch powers the whole
