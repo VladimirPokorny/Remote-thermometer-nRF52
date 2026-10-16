@@ -31,13 +31,15 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/settings/settings.h>
 
+#include "app_config.h"
 #include "max31865.h"
 #include "temp_service.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 /***************************************************************************************************************/
-/*  Sampling interval and enabled sensors: CONFIG_APP_* in prj.conf / boards/<board>.conf (see Kconfig).       */
+/*  Sampling interval, enabled sensors, measuring only while connected: runtime configuration (app_config.h),  */
+/*  set over BLE (Config characteristic); defaults from CONFIG_APP_* in prj.conf / boards/<board>.conf.         */
 /*  The characteristics of the RTD sensors and the reference resistors are in the board overlay (boards/).     */
 /*  More about this work, functions and variables is written in the final Master thesis:                       */
 /*  https://www.vut.cz/studenti/zav-prace/detail/142726                                                        */
@@ -53,26 +55,24 @@ struct rtd_channel {
 	struct max31865 max;
 	struct gpio_dt_spec enable;
 	struct gpio_dt_spec led;        /* .port NULL: no LED */
-	bool used;
 };
 
 /* LED n mirrors the load switch of sensor n (CONFIG_APP_SENSOR_LEDS) */
 #define SENSOR_LED(alias)                                                                        \
 	COND_CODE_1(CONFIG_APP_SENSOR_LEDS, (GPIO_DT_SPEC_GET_OR(DT_ALIAS(alias), gpios, {0})), ({0}))
 
-#define RTD_CHANNEL(label, idx, led_alias, use)                                                  \
+#define RTD_CHANNEL(label, idx, led_alias)                                                       \
 	{                                                                                        \
 		.max = MAX31865_DT_SPEC_GET(DT_NODELABEL(label)),                                \
 		.enable = GPIO_DT_SPEC_GET_BY_IDX(ZEPHYR_USER, rtd_enable_gpios, idx),           \
 		.led = SENSOR_LED(led_alias),                                                    \
-		.used = (use),                                                                   \
 	}
 
 static const struct rtd_channel channels[SENSOR_COUNT] = {
-	RTD_CHANNEL(rtd1, 0, led0, IS_ENABLED(CONFIG_APP_SENSOR_1)),
-	RTD_CHANNEL(rtd2, 1, led1, IS_ENABLED(CONFIG_APP_SENSOR_2)),
-	RTD_CHANNEL(rtd3, 2, led2, IS_ENABLED(CONFIG_APP_SENSOR_3)),
-	RTD_CHANNEL(rtd4, 3, led3, IS_ENABLED(CONFIG_APP_SENSOR_4)),
+	RTD_CHANNEL(rtd1, 0, led0),
+	RTD_CHANNEL(rtd2, 1, led1),
+	RTD_CHANNEL(rtd3, 2, led2),
+	RTD_CHANNEL(rtd4, 3, led3),
 };
 
 static const struct bt_data ad[] = {
@@ -87,7 +87,8 @@ static const struct bt_data ad[] = {
 
 static atomic_t is_connected;
 
-/* Given when a client connects: the measurement thread starts a round at once */
+/* Given when a client connects or the configuration changes: the measurement thread starts a
+ * round at once */
 static K_SEM_DEFINE(measure_now, 0, 1);
 
 static int advertise(uint32_t interval)
@@ -143,7 +144,10 @@ static void connected(struct bt_conn *conn, uint8_t err)
 	k_work_cancel_delayable(&adv_slow_work);
 	LOG_INF("Connected.");
 
-	if (IS_ENABLED(CONFIG_APP_MEASURE_ONLY_CONNECTED)) {
+	struct app_config cfg;
+
+	app_config_get(&cfg);
+	if (cfg.measure_only_connected) {
 		k_sem_give(&measure_now);       /* first values right away */
 	}
 }
@@ -228,16 +232,26 @@ static int measure(const struct rtd_channel *ch, float *temperature)
 	return err;
 }
 
-/* Measurement thread: every CONFIG_APP_SAMPLING_INTERVAL_MS read all enabled sensors, then publish
+/* New configuration from a client: measure with it at once (also restarts the interval) */
+static void config_changed(const struct app_config *cfg)
+{
+	k_sem_give(&measure_now);
+}
+
+/* Measurement thread: every cfg.interval_ms read all enabled sensors, then publish
  * them over BLE in one notification. Replaces the app_timer flag polled in the nRF5 SDK main loop.
  * Between rounds the thread sleeps and the CPU idles in System ON sleep (tickless kernel).
- * With CONFIG_APP_MEASURE_ONLY_CONNECTED the sensors stay off while no client is connected. */
+ * With cfg.measure_only_connected the sensors stay off while no client is connected. */
 static void measurement_thread(void *p1, void *p2, void *p3)
 {
 	int64_t next = k_uptime_get();
 
 	for (;;) {
-		if (IS_ENABLED(CONFIG_APP_MEASURE_ONLY_CONNECTED) && !atomic_get(&is_connected)) {
+		struct app_config cfg;
+
+		app_config_get(&cfg);
+
+		if (cfg.measure_only_connected && !atomic_get(&is_connected)) {
 			LOG_INF("No client connected: sensors off.");
 			k_sem_take(&measure_now, K_FOREVER);
 			next = k_uptime_get();
@@ -247,7 +261,8 @@ static void measurement_thread(void *p1, void *p2, void *p3)
 		for (int i = 0; i < SENSOR_COUNT; i++) {
 			float temperature;
 
-			if (!channels[i].used) {
+			if (!(cfg.sensor_mask & BIT(i))) {
+				temp_service_clear(i);  /* disabled: DE AD BE EF */
 				continue;
 			}
 
@@ -270,7 +285,7 @@ static void measurement_thread(void *p1, void *p2, void *p3)
 
 		/* Fixed period from round start to round start. A round longer than the interval
 		 * starts the next one at once instead of running a backlog of late rounds. */
-		next += CONFIG_APP_SAMPLING_INTERVAL_MS;
+		next += cfg.interval_ms;
 		if (next < k_uptime_get()) {
 			next = k_uptime_get();
 		}
@@ -297,7 +312,7 @@ int main(void)
 
 	// The MAX31865 chips are unpowered until measured: measure() configures them after power-up
 	for (int i = 0; i < SENSOR_COUNT; i++) {
-		if (channels[i].used && !spi_is_ready_dt(&channels[i].max.spi)) {
+		if (!spi_is_ready_dt(&channels[i].max.spi)) {
 			LOG_ERR("SPI bus of sensor %d is not ready", i + 1);
 			return 0;
 		}
@@ -309,17 +324,23 @@ int main(void)
 		return 0;
 	}
 
+	// Configuration defaults from Kconfig, replaced by the stored one in settings_load()
+	app_config_init(config_changed);
+
 	if (IS_ENABLED(CONFIG_SETTINGS)) {
-		settings_load();            // bonds
+		settings_load();            // bonds and the stored configuration
 	}
 
 	k_work_submit(&advertising_work);
 
 	// Start execution.
-	LOG_INF("Measuring temperature started: every %d ms, sensors%s%s%s%s.",
-		CONFIG_APP_SAMPLING_INTERVAL_MS,
-		channels[0].used ? " 1" : "", channels[1].used ? " 2" : "",
-		channels[2].used ? " 3" : "", channels[3].used ? " 4" : "");
+	struct app_config cfg;
+
+	app_config_get(&cfg);
+	LOG_INF("Measuring temperature started: every %u ms, sensors%s%s%s%s%s.", cfg.interval_ms,
+		cfg.sensor_mask & BIT(0) ? " 1" : "", cfg.sensor_mask & BIT(1) ? " 2" : "",
+		cfg.sensor_mask & BIT(2) ? " 3" : "", cfg.sensor_mask & BIT(3) ? " 4" : "",
+		cfg.measure_only_connected ? ", only while connected" : "");
 	k_thread_name_set(measurement_tid, "measurement");
 	k_thread_start(measurement_tid);
 

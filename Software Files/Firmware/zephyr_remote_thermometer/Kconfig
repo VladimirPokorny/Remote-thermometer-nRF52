@@ -1,6 +1,9 @@
 # Remote thermometer application settings.
 # Set them in prj.conf (all boards) or boards/<board>.conf (one board), or interactively with
 #   west build -d <build dir> -t menuconfig
+# APP_SAMPLING_INTERVAL_MS, APP_MEASURE_ONLY_CONNECTED and APP_SENSOR_n are the factory defaults of the
+# runtime configuration: a BLE client can change them (Config characteristic, thermometer.py config),
+# and the hardware build keeps the changed values in flash.
 
 menu "Remote thermometer"
 

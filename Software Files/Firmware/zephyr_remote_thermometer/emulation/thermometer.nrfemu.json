@@ -55,5 +55,10 @@
       },
       "build": ".\\build.ps1 -Target dongle"
     }
-  ]
+  ],
+  "power": {
+    "battery": {
+      "preset": "ls14250"
+    }
+  }
 }

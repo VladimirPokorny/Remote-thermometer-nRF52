@@ -7,6 +7,7 @@ project(remote_thermometer)
 
 target_sources(app PRIVATE
   src/main.c
+  src/app_config.c
   src/temp_service.c
   src/max31865.c
   )

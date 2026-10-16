@@ -49,7 +49,7 @@ values with the logger or the test client instead.
 ## Run in the emulator
 
 The emulator project files in [`emulation/`](emulation) load everything in one step: nodes, ELFs, the sensor
-model and the dongle's TCP port. Build the firmware first (`.uild.ps1`, plus `-Target dongle` or
+model and the dongle's TCP port. Build the firmware first (`.\build.ps1`, plus `-Target dongle` or
 `-Target client`), then pick a project:
 
 | Project file | Nodes |
@@ -84,30 +84,32 @@ To set things up by hand instead: add a node with the ELF, then in the Monitor t
 `mach set "thermo"` and `include @C:/Programming/Remote-thermometer-nRF52/Software\ Files/Firmware/zephyr_remote_thermometer/emulation/max31865.resc`
 (Renode needs the space escaped as `\ `).
 
-## Log temperatures on the PC from the emulator (Bumble)
+## Log and configure from the PC (thermometer.py)
+
+[`thermometer.py`](../../BLE%20Connect%20app/thermometer.py) in `Software Files\BLE Connect app` logs the
+temperatures and reads or changes the configuration (see its [README](../../BLE%20Connect%20app/README.md)).
 
 The PC's Bluetooth adapter can't reach the emulated radio. Instead, a virtual dongle node gives a PC-side
 BLE host stack ([Bumble](https://github.com/google/bumble)) its own emulated controller:
 
 ```
-BLE_Connect_bumble.py ──HCI over TCP :9000──▶ "dongle" node (hci_uart) ──Renode BLE medium──▶ "thermo" node
+thermometer.py ──HCI over TCP :9000──▶ "dongle" node (hci_uart) ──Renode BLE medium──▶ "thermo" node
 ```
 
-1. Build once: `.uild.ps1` and `.uild.ps1 -Target dongle`.
+1. Build once: `.\build.ps1` and `.\build.ps1 -Target dongle`.
 2. Set up the Python app once (in `Software Files\BLE Connect app`):
    ```powershell
    python -m venv .venv
    .\.venv\Scripts\pip install -r requirements.txt
    ```
 3. Load [`emulation/thermometer.nrfemu.json`](emulation/thermometer.nrfemu.json) in the emulator (see above).
-4. Start the logger:
+4. Use the app:
    ```powershell
-   .\.venv\Scripts\python BLE_Connect_bumble.py
+   .\.venv\Scripts\python thermometer.py log                                   # one line per round + CSV
+   .\.venv\Scripts\python thermometer.py config --interval 2000 --sensors 1,3  # change the configuration
    ```
-   It scans for `Remote_Thermometer`, connects, subscribes to the "all sensors" characteristic and, for every
-   measurement round the thermometer notifies, prints the four temperatures and appends them to
-   `temperature.csv` (same format as `BLE_Connect.py`). Options: `--transport`, `--csv`, `--verbose`, and
-   `--poll --interval <s>` to read the sensors periodically instead.
+
+For the real thermometer add `--transport pc` (the PC's Bluetooth, through bleak).
 
 The logger can be started before or after the emulator and keeps running across **Reload project**: whenever
 the emulator isn't there, isn't running yet or restarts, it says so and reconnects.
@@ -116,13 +118,18 @@ Notes:
 
 - With two nodes on the BLE medium the emulation runs slower than real time. In the test, readings arrived
   about every 3.5 s of wall-clock time, and the CSV timestamps are wall-clock time.
-- `--transport usb:0` drives a real HCI dongle instead (for example an nRF52840 dongle with Zephyr's
-  `hci_usb`), so the same script also works with the real thermometer. Not tested; on Windows the dongle
-  needs the WinUSB driver (e.g. installed with Zadig).
+- `--transport usb:0` drives a real HCI dongle through Bumble instead (for example an nRF52840 dongle with
+  Zephyr's `hci_usb`). Not tested; on Windows the dongle needs the WinUSB driver (e.g. installed with Zadig).
 - Only one emulator instance can run at a time with the BLE medium on: `emulation LogBLETraffic` holds a
   named pipe, and a second Renode crashes with "All pipe instances are busy".
 
 ## Configuration
+
+The sampling interval, the enabled sensors and "measure only when connected" are a **runtime
+configuration**: a BLE client changes them through the Config characteristic (`thermometer.py config`), they
+take effect at once, and the hardware build keeps them in flash (settings). The Kconfig options below are
+their factory defaults, used until a client changes them (the emulator build starts from them at every
+restart, because Renode has no flash controller model).
 
 The thermometer settings are Kconfig options (defined in [`Kconfig`](Kconfig)). Set them in the
 "Thermometer settings" block at the top of [`prj.conf`](prj.conf) for all builds, or in `boards/<board>.conf`
@@ -171,11 +178,27 @@ nothing in Release; the Debug configuration logs over RTT, like the original fir
 | Service | `0000ABCD-5468-616E-6B73-4D6F6D446164` | |
 | Sensor 1..4 | `00001000-…`, `00002000-…`, `00003000-…`, `00004000-…` (same base) | read |
 | All sensors | `00005000-5468-616E-6B73-4D6F6D446164` | read, notify |
+| Config | `00006000-5468-616E-6B73-4D6F6D446164` | read, write |
 
 Sensor value: int32, little endian, milli-degrees Celsius. "All sensors" is the four values in a row (16 bytes)
 and is notified **once per measurement round**, after all enabled sensors were read. Before the first
 measurement, and for disabled sensors, a value is `DE AD BE EF`. Advertising includes the name
 `Remote_Thermometer` and the Device Information Service.
+
+Config, 8 bytes, little endian, always written as a whole:
+
+| Byte | Content |
+| --- | --- |
+| 0 | Format version, 1 |
+| 1 | Sensor mask: bit n = sensor n+1 enabled |
+| 2 | Flags: bit 0 = measure only while a client is connected |
+| 3 | Reserved, 0 |
+| 4..7 | Sampling interval in ms, 100 .. 3600000 |
+
+A valid write starts a measurement round with the new settings at once. Out-of-range values are rejected with
+ATT error 0x13 (value not allowed), a wrong length with 0x0D. The characteristic needs no pairing, so anyone
+in range can change it; requiring an encrypted link is a one-line change (`BT_GATT_PERM_WRITE_ENCRYPT`), but
+encryption can't be tested in Renode.
 
 Compared with the nRF5 SDK firmware the UUIDs and value format are unchanged, but the per-sensor
 characteristics no longer notify. Clients that read them (like `BLE_Connect.py`) work as before. Clients that
